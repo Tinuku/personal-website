@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VGM-0001 — ADMIN (local only)</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f1ea; --ink:#1a1814; --faint:#d9d3c4; --mute:#6e6555;
+  --red:#b3441e; --green:#2f6b34;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --serif:Georgia,'Times New Roman',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--paper);
+  background-image:
+    linear-gradient(rgba(26,24,20,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,24,20,.045) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--ink); font:14px/1.6 var(--mono);
+  max-width:900px; margin:0 auto; padding:48px 24px 160px;
+}
+a{color:var(--ink);text-decoration-color:var(--red)}
+
+/* header */
+.titleblock{
+  border:1.5px solid var(--ink);position:relative;
+  display:grid;grid-template-columns:1fr auto;font-size:12.5px;
+  background:rgba(244,241,234,.7);margin-bottom:8px;
+}
+.titleblock>div{padding:10px 16px}
+.titleblock .cell-r{border-left:1.5px solid var(--ink);text-align:right;color:var(--mute);min-width:150px}
+.titleblock h1{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.3px}
+.titleblock .sub{color:var(--mute);margin-top:2px}
+.titleblock .cell-r b{display:block;color:var(--ink)}
+.stamp{
+  position:absolute;top:-15px;right:-8px;transform:rotate(-5deg);
+  font-size:11px;font-weight:600;letter-spacing:2px;color:var(--red);
+  border:2.5px double var(--red);border-radius:3px;padding:5px 11px;
+  background:rgba(244,241,234,.9);
+}
+.warnbar{
+  border:1.5px solid var(--red);border-left-width:5px;background:rgba(179,68,30,.06);
+  padding:10px 14px;font-size:12px;color:var(--ink);margin:14px 0 6px;line-height:1.55;
+}
+.warnbar b{letter-spacing:1px}
+#loadstatus{font-size:11.5px;color:var(--mute);margin:10px 0 26px;display:flex;gap:18px;flex-wrap:wrap}
+#loadstatus .ok{color:var(--green)}
+#loadstatus .miss{color:var(--mute)}
+
+/* section */
+.sec{margin-bottom:46px}
+.sec-h{
+  font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  display:flex;align-items:baseline;gap:12px;margin-bottom:6px;
+}
+.sec-h .n{color:var(--red)}
+.sec-h::after{content:"";flex:1;border-bottom:1px solid var(--faint);transform:translateY(-4px)}
+.sec-note{font-size:11.5px;color:var(--mute);margin-bottom:16px}
+
+/* card */
+.card{
+  border:1px solid var(--faint);border-left:3px solid var(--faint);
+  background:rgba(255,255,255,.35);padding:14px 16px 16px;margin-bottom:14px;
+}
+.card.vis-public{border-left-color:var(--green)}
+.card.vis-private{border-left-color:var(--red);background:rgba(179,68,30,.035)}
+.card-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.card-handle{font-size:11px;color:var(--mute);letter-spacing:1px}
+.card-top .grow{flex:1}
+
+/* visibility toggle */
+.vis{display:inline-flex;border:1px solid var(--ink);border-radius:3px;overflow:hidden;font-size:11px}
+.vis button{
+  font-family:var(--mono);font-size:11px;letter-spacing:1px;border:none;cursor:pointer;
+  padding:5px 12px;background:transparent;color:var(--mute);text-transform:uppercase;
+}
+.vis button.on[data-v="public"]{background:var(--green);color:#fff}
+.vis button.on[data-v="private"]{background:var(--red);color:#fff}
+
+/* fields */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 16px}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld.full{grid-column:1 / -1}
+label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mute)}
+input,select,textarea{
+  font-family:var(--mono);font-size:13px;color:var(--ink);
+  background:rgba(244,241,234,.7);border:1px solid var(--faint);border-radius:2px;
+  padding:7px 8px;width:100%;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red)}
+textarea{min-height:150px;resize:vertical;line-height:1.5;white-space:pre}
+
+/* mini buttons */
+.btn{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.5px;cursor:pointer;
+  background:transparent;border:1px solid var(--ink);border-radius:3px;
+  padding:6px 12px;color:var(--ink);
+}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.ghost{border-color:var(--faint);color:var(--mute)}
+.btn.ghost:hover{background:var(--faint);color:var(--ink)}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger:hover{background:var(--red);color:#fff}
+.iconbtn{font-family:var(--mono);font-size:13px;cursor:pointer;background:none;border:1px solid var(--faint);
+  border-radius:3px;width:26px;height:26px;color:var(--mute);line-height:1}
+.iconbtn:hover{border-color:var(--ink);color:var(--ink)}
+.addbtn{margin-top:4px}
+
+/* preview */
+.prev-toggle{font-size:11px;color:var(--mute);cursor:pointer;margin-top:8px;display:inline-block;
+  border-bottom:1px dotted var(--mute)}
+.preview{
+  display:none;border-left:2px solid var(--red);margin-top:10px;padding:6px 18px 4px;
+  font-family:var(--serif);font-size:15px;background:rgba(244,241,234,.5);
+}
+.preview.show{display:block}
+.preview h5{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--mute);margin:14px 0 6px}
+.preview h5:first-child{margin-top:4px}
+.preview ul{list-style:none;margin:4px 0 10px}
+.preview li{margin-bottom:3px}
+.preview li .mk{font-family:var(--mono);font-size:12.5px;color:var(--mute);margin-right:8px}
+.preview li .mk.x{color:var(--ink)} .preview li .mk.t{color:var(--red)}
+.preview p{margin-bottom:10px}
+.preview code{font-family:var(--mono);font-size:13px;background:rgba(26,24,20,.06);padding:1px 5px;border-radius:2px}
+
+/* revisions */
+.revrow{display:grid;grid-template-columns:80px 120px 1fr auto;gap:10px;align-items:center;margin-bottom:8px}
+@media(max-width:560px){.revrow{grid-template-columns:1fr 1fr;}.grid{grid-template-columns:1fr}}
+
+/* export bar */
+.exportbar{
+  position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;gap:16px;padding:12px 22px;flex-wrap:wrap;
+  font-size:12px;z-index:50;box-shadow:0 -2px 18px rgba(0,0,0,.18);
+}
+.exportbar .counts{flex:1;min-width:160px;letter-spacing:.5px}
+.exportbar .counts b.pub{color:#7fd18a} .exportbar .counts b.prv{color:#ee9b86}
+.exportbar .btn{border-color:var(--paper);color:var(--paper)}
+.exportbar .btn:hover{background:var(--paper);color:var(--ink)}
+.exportbar .btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.exportbar .btn.primary:hover{background:#cf5026}
+#saved{font-size:11px;color:#7fd18a;min-width:90px}
+
+/* generated file modal */
+.gen{display:none;border:1.5px solid var(--ink);background:var(--paper);padding:16px;margin-top:18px}
+.gen.show{display:block}
+.gen h4{font-size:12px;letter-spacing:1px;text-transform:uppercase;margin:10px 0 4px;color:var(--mute)}
+.gen textarea{min-height:120px;font-size:11.5px;white-space:pre}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="titleblock">
+    <span class="stamp">PRIVATE · LOCAL ONLY</span>
+    <div>
+      <h1>Admin — Project Console</h1>
+      <div class="sub">Edit VGM-0001 content · publish by saving + git push</div>
+    </div>
+    <div class="cell-r">DOC. NO.<b>VGM-0001</b></div>
+  </div>
+  <div class="warnbar">
+    <b>HOW THIS WORKS.</b> Open this file on your own computer only — never deploy it.
+    Edit below, set each item <b>PUBLIC</b> or <b>PRIVATE</b>, then hit <b>Save</b> in the bar at the
+    bottom. <b>Public</b> items are written to <code>data.js</code> (commit &amp; push to go live).
+    <b>Private</b> items go to <code>data-private.js</code>, which is gitignored and stays on this
+    machine only. After saving, run: <code>git add data.js &amp;&amp; git commit -m "update" &amp;&amp; git push</code>.
+  </div>
+  <div id="loadstatus"></div>
+</header>
+
+<main>
+  <section class="sec">
+    <div class="sec-h"><span class="n">2</span> Project Index</div>
+    <div class="sec-note">Status: active · done · draft. Details accept HTML (see preview). Markers: [x] done, [~] in progress, [ ] todo.</div>
+    <div id="projects-list"></div>
+    <button class="btn addbtn" data-add="project">+ add project</button>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><span class="n">3</span> IP Vault</div>
+    <div class="sec-note">Status: done (→ shows your label, e.g. TESTED) or draft (→ e.g. IN DESIGN).</div>
+    <div id="vault-list"></div>
+    <button class="btn addbtn" data-add="vault">+ add block</button>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><span class="n">5</span> Revision History</div>
+    <div class="sec-note">Always public — this is the changelog. Newest first; row 1 shows in the page header.</div>
+    <div id="rev-list"></div>
+    <button class="btn addbtn" data-add="rev">+ add revision</button>
+  </section>
+
+  <div class="gen" id="gen">
+    <h4>data.js (public — commit this)</h4>
+    <textarea id="gen-pub" readonly></textarea>
+    <h4>data-private.js (private — keep local, do not commit)</h4>
+    <textarea id="gen-prv" readonly></textarea>
+  </div>
+</main>
+
+<div class="exportbar">
+  <div class="counts" id="counts">—</div>
+  <span id="saved"></span>
+  <button class="btn ghost" id="btn-show">show files</button>
+  <button class="btn" id="btn-prv">Save data-private.js</button>
+  <button class="btn primary" id="btn-pub">Save data.js</button>
+</div>
+
+<!-- content loads here; data-private.js may 404 on first run, that's fine -->
+<script src="data.js"></script>
+<script src="data-private.js"></script>
+<script>
+const PUB = window.SITE_DATA || {revisions:[],projects:[],vault:[]};
+const PRV = window.SITE_DATA_PRIVATE || {projects:[],vault:[]};
+
+/* ---------- load status line ---------- */
+(function(){
+  const el = document.getElementById('loadstatus');
+  const pub = !!window.SITE_DATA, prv = !!window.SITE_DATA_PRIVATE;
+  el.innerHTML =
+    `<span class="${pub?'ok':'miss'}">data.js ${pub?'loaded ✓':'not found'}</span>`+
+    `<span class="${prv?'ok':'miss'}">data-private.js ${prv?'loaded ✓':'none yet (created on first save)'}</span>`+
+    `<span>${window.showSaveFilePicker?'direct save: supported (Chrome/Edge)':'direct save: not supported — will download instead'}</span>`;
+})();
+
+/* ---------- helpers ---------- */
+const esc = s => (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const val = (root,sel) => root.querySelector(sel).value;
+
+function visToggle(vis){
+  return `<span class="vis">
+    <button type="button" data-v="public"  class="${vis==='public'?'on':''}">public</button>
+    <button type="button" data-v="private" class="${vis==='private'?'on':''}">private</button>
+  </span>`;
+}
+function cardChrome(inner, vis){
+  const c = document.createElement('div');
+  c.className = 'card vis-'+vis;
+  c.dataset.vis = vis;
+  c.innerHTML = `
+    <div class="card-top">
+      <span class="card-handle">⠿</span>
+      ${visToggle(vis)}
+      <span class="grow"></span>
+      <button type="button" class="iconbtn" data-move="up" title="move up">↑</button>
+      <button type="button" class="iconbtn" data-move="down" title="move down">↓</button>
+      <button type="button" class="btn danger" data-del title="delete">delete</button>
+    </div>${inner}`;
+  return c;
+}
+
+/* ---------- PROJECT card ---------- */
+function projectCard(p){
+  const vis = p._vis || 'public';
+  const inner = `
+    <div class="grid">
+      <div class="fld"><label>No.</label><input class="f-no" value="${esc(p.no)}" placeholder="004"></div>
+      <div class="fld"><label>Updated</label><input class="f-updated" value="${esc(p.updated)}" placeholder="2026-06"></div>
+      <div class="fld full"><label>Title</label><input class="f-title" value="${esc(p.title)}" placeholder="Project name"></div>
+      <div class="fld"><label>Domain</label><input class="f-domain" value="${esc(p.domain)}" placeholder="power / embedded"></div>
+      <div class="fld"><label>Status</label>
+        <select class="f-status">
+          ${['active','done','draft'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fld full"><label>Details (HTML)</label><textarea class="f-details">${esc(p.details)}</textarea></div>
+    </div>
+    <span class="prev-toggle">▸ preview</span>
+    <div class="preview"></div>`;
+  return wire(cardChrome(inner, vis));
+}
+
+/* ---------- VAULT card ---------- */
+function vaultCard(b){
+  const vis = b._vis || 'public';
+  const inner = `
+    <div class="grid">
+      <div class="fld"><label>Part No.</label><input class="f-no" value="${esc(b.no)}" placeholder="IPV-004"></div>
+      <div class="fld"><label>Rev</label><input class="f-rev" value="${esc(b.rev)}" placeholder="A"></div>
+      <div class="fld full"><label>Block</label><input class="f-title" value="${esc(b.title)}" placeholder="Block name"></div>
+      <div class="fld"><label>Validated</label><input class="f-validated" value="${esc(b.validated)}" placeholder="2026-06 or —"></div>
+      <div class="fld"><label>Status</label>
+        <select class="f-status">
+          ${['done','draft'].map(s=>`<option ${b.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fld"><label>Status label</label><input class="f-statusLabel" value="${esc(b.statusLabel)}" placeholder="TESTED / IN DESIGN"></div>
+      <div class="fld full"><label>Details (HTML)</label><textarea class="f-details">${esc(b.details)}</textarea></div>
+    </div>
+    <span class="prev-toggle">▸ preview</span>
+    <div class="preview"></div>`;
+  return wire(cardChrome(inner, vis));
+}
+
+/* ---------- REVISION row ---------- */
+function revRow(r){
+  const row = document.createElement('div');
+  row.className = 'revrow';
+  row.innerHTML = `
+    <input class="f-rev"  value="${esc(r[0])}" placeholder="0.4">
+    <input class="f-date" value="${esc(r[1])}" placeholder="2026-06-14">
+    <input class="f-desc" value="${esc(r[2])}" placeholder="What changed">
+    <span style="display:flex;gap:4px">
+      <button type="button" class="iconbtn" data-move="up">↑</button>
+      <button type="button" class="iconbtn" data-move="down">↓</button>
+      <button type="button" class="iconbtn" data-del title="delete">✕</button>
+    </span>`;
+  row.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>move(row,b.dataset.move));
+  row.querySelector('[data-del]').onclick=()=>{row.remove();refresh();};
+  row.querySelectorAll('input').forEach(i=>i.addEventListener('input',refresh));
+  return row;
+}
+
+/* ---------- wire a card's controls ---------- */
+function wire(card){
+  card.querySelectorAll('.vis button').forEach(btn=>{
+    btn.onclick=()=>{
+      const v=btn.dataset.v; card.dataset.vis=v;
+      card.className='card vis-'+v;
+      card.querySelectorAll('.vis button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+      refresh();
+    };
+  });
+  card.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>move(card,b.dataset.move));
+  card.querySelector('[data-del]').onclick=()=>{
+    if(confirm('Delete this item?')){card.remove();refresh();}
+  };
+  const ta = card.querySelector('.f-details');
+  const pv = card.querySelector('.preview');
+  const tg = card.querySelector('.prev-toggle');
+  const draw=()=>{ pv.innerHTML = ta.value; };
+  tg.onclick=()=>{ pv.classList.toggle('show'); tg.textContent=(pv.classList.contains('show')?'▾ hide preview':'▸ preview'); draw(); };
+  ta.addEventListener('input',()=>{ if(pv.classList.contains('show')) draw(); refresh(); });
+  card.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',refresh));
+  return card;
+}
+function move(node,dir){
+  if(dir==='up' && node.previousElementSibling) node.parentNode.insertBefore(node,node.previousElementSibling);
+  if(dir==='down' && node.nextElementSibling) node.parentNode.insertBefore(node.nextElementSibling,node);
+  refresh();
+}
+
+/* ---------- mount initial data ---------- */
+const $proj = document.getElementById('projects-list');
+const $vault = document.getElementById('vault-list');
+const $rev = document.getElementById('rev-list');
+
+(PUB.projects||[]).forEach(p=>$proj.appendChild(projectCard({...p,_vis:'public'})));
+(PRV.projects||[]).forEach(p=>$proj.appendChild(projectCard({...p,_vis:'private'})));
+(PUB.vault||[]).forEach(b=>$vault.appendChild(vaultCard({...b,_vis:'public'})));
+(PRV.vault||[]).forEach(b=>$vault.appendChild(vaultCard({...b,_vis:'private'})));
+(PUB.revisions||[]).forEach(r=>$rev.appendChild(revRow(r)));
+
+/* ---------- add buttons ---------- */
+document.querySelectorAll('[data-add]').forEach(btn=>{
+  btn.onclick=()=>{
+    if(btn.dataset.add==='project'){ const c=projectCard({_vis:'private',no:'',title:'',domain:'',status:'active',updated:'',details:'\n<h5>Overview</h5>\n<p></p>'}); $proj.appendChild(c); c.scrollIntoView({behavior:'smooth',block:'center'}); }
+    if(btn.dataset.add==='vault'){ const c=vaultCard({_vis:'private',no:'',title:'',rev:'A',validated:'—',status:'draft',statusLabel:'IN DESIGN',details:'\n<h5>Specification</h5>\n<ul>\n  <li><span class="mk">·</span></li>\n</ul>'}); $vault.appendChild(c); c.scrollIntoView({behavior:'smooth',block:'center'}); }
+    if(btn.dataset.add==='rev'){ const today=new Date().toISOString().slice(0,10); const r=revRow(['',today,'']); $rev.insertBefore(r,$rev.firstChild); }
+    refresh();
+  };
+});
+
+/* ---------- collect + serialize ---------- */
+function collectProjects(){
+  return [...$proj.querySelectorAll('.card')].map(c=>({
+    _vis:c.dataset.vis, no:val(c,'.f-no'), title:val(c,'.f-title'),
+    domain:val(c,'.f-domain'), status:val(c,'.f-status'),
+    updated:val(c,'.f-updated'), details:val(c,'.f-details')
+  }));
+}
+function collectVault(){
+  return [...$vault.querySelectorAll('.card')].map(c=>({
+    _vis:c.dataset.vis, no:val(c,'.f-no'), title:val(c,'.f-title'),
+    rev:val(c,'.f-rev'), validated:val(c,'.f-validated'),
+    status:val(c,'.f-status'), statusLabel:val(c,'.f-statusLabel'), details:val(c,'.f-details')
+  }));
+}
+function collectRevisions(){
+  return [...$rev.querySelectorAll('.revrow')].map(r=>[val(r,'.f-rev'),val(r,'.f-date'),val(r,'.f-desc')]);
+}
+const strip = o => { const {_vis,...rest}=o; return rest; };
+const ser = o => JSON.stringify(o,null,2).replace(/<\//g,'<\\/');
+
+function build(){
+  const projects=collectProjects(), vault=collectVault(), revisions=collectRevisions();
+  const pub={
+    revisions,
+    projects:projects.filter(p=>p._vis==='public').map(strip),
+    vault:vault.filter(v=>v._vis==='public').map(strip)
+  };
+  const prv={
+    projects:projects.filter(p=>p._vis==='private').map(strip),
+    vault:vault.filter(v=>v._vis==='private').map(strip)
+  };
+  const pubTxt='/* AUTO-GENERATED by admin.html — PUBLIC site data. Safe to commit & deploy. */\n'+
+    '/* Edit through admin.html (local only). Anything in this file becomes public. */\n'+
+    'window.SITE_DATA = '+ser(pub)+';\n';
+  const prvTxt='/* AUTO-GENERATED by admin.html — PRIVATE. Do NOT commit or deploy (see .gitignore). */\n'+
+    '/* These items appear ONLY in admin.html on your machine. They never reach the public site. */\n'+
+    'window.SITE_DATA_PRIVATE = '+ser(prv)+';\n';
+  return {pubTxt,prvTxt,counts:{pub:pub.projects.length+pub.vault.length, prv:prv.projects.length+prv.vault.length}};
+}
+
+/* ---------- live counts + dirty flag ---------- */
+let SAVED=true;
+function refresh(){
+  const {counts}=build();
+  document.getElementById('counts').innerHTML =
+    `<b class="pub">${counts.pub} public</b> · <b class="prv">${counts.prv} private</b> &nbsp; data.js = public site`;
+  SAVED=false; document.getElementById('saved').textContent='';
+  const gen=document.getElementById('gen');
+  if(gen.classList.contains('show')){ const {pubTxt,prvTxt}=build(); document.getElementById('gen-pub').value=pubTxt; document.getElementById('gen-prv').value=prvTxt; }
+}
+refresh();
+window.addEventListener('beforeunload',e=>{ if(!SAVED){ e.preventDefault(); e.returnValue=''; } });
+
+/* ---------- save ---------- */
+async function saveFile(name, contents){
+  if(window.showSaveFilePicker){
+    try{
+      const h=await window.showSaveFilePicker({suggestedName:name,types:[{description:'JavaScript',accept:{'text/javascript':['.js']}}]});
+      const w=await h.createWritable(); await w.write(contents); await w.close();
+      return 'saved';
+    }catch(e){ if(e.name==='AbortError') return 'cancel'; }
+  }
+  const blob=new Blob([contents],{type:'text/javascript'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  return 'download';
+}
+function flag(msg){ const s=document.getElementById('saved'); s.textContent=msg; }
+document.getElementById('btn-pub').onclick=async()=>{
+  const r=await saveFile('data.js', build().pubTxt);
+  if(r!=='cancel'){ SAVED=true; flag(r==='saved'?'✓ saved — now git push':'✓ downloaded → move into repo'); }
+};
+document.getElementById('btn-prv').onclick=async()=>{
+  const r=await saveFile('data-private.js', build().prvTxt);
+  if(r!=='cancel'){ flag(r==='saved'?'✓ private saved (stays local)':'✓ downloaded (keep local)'); }
+};
+document.getElementById('btn-show').onclick=()=>{
+  const gen=document.getElementById('gen'); gen.classList.toggle('show');
+  if(gen.classList.contains('show')){ const {pubTxt,prvTxt}=build(); document.getElementById('gen-pub').value=pubTxt; document.getElementById('gen-prv').value=prvTxt; gen.scrollIntoView({behavior:'smooth'}); }
+};
+</script>
+</body>
+</html>

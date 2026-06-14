@@ -1,0 +1,14 @@
+# Private project data — must NEVER be committed or deployed.
+# admin.html keeps your private (yours-only) items here.
+data-private.js
+
+# Local-only admin editor. Uncomment the next line if you also want to keep
+# the editor off GitHub entirely. (It exposes no private data on its own, but
+# there's no reason for visitors to load it.)
+# admin.html
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/

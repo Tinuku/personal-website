@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VGM-0001 — Valentin-Gabriel Marincaș, engineering log</title>
+<meta name="description" content="Engineering log and component library of Valentin-Gabriel Marincaș.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f1ea;
+  --ink:#1a1814;
+  --faint:#d9d3c4;
+  --mute:#6e6555;
+  --red:#b3441e;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --serif:Georgia,'Times New Roman',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  background-image:
+    linear-gradient(rgba(26,24,20,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,24,20,.045) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--ink);
+  font:16.5px/1.7 var(--serif);
+  max-width:780px;margin:0 auto;
+  padding:56px 24px 110px;
+}
+::selection{background:rgba(179,68,30,.18)}
+a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px}
+a:hover{color:var(--red)}
+.mono{font-family:var(--mono)}
+
+/* ---- title block ---- */
+.titleblock{
+  border:1.5px solid var(--ink);position:relative;
+  display:grid;grid-template-columns:1fr auto;
+  font-family:var(--mono);font-size:12.5px;
+  background:rgba(244,241,234,.7);
+}
+.titleblock>div{padding:10px 16px}
+.titleblock .cell-r{border-left:1.5px solid var(--ink);text-align:right;color:var(--mute);min-width:170px}
+.titleblock .row2{border-top:1px solid var(--faint)}
+.titleblock h1{font-family:var(--serif);font-size:clamp(22px,4.5vw,30px);font-weight:600;letter-spacing:-.3px;line-height:1.25}
+.titleblock .sub{color:var(--mute);margin-top:2px}
+.titleblock .cell-r b{display:block;color:var(--ink);font-weight:600}
+.stamp{
+  position:absolute;top:-16px;right:-10px;transform:rotate(-6deg);
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:2.5px;
+  color:var(--red);border:2.5px double var(--red);border-radius:3px;
+  padding:5px 11px;background:rgba(244,241,234,.85);
+}
+@media(max-width:560px){.stamp{right:0;top:-20px;font-size:10px}}
+
+/* ---- schematic divider ---- */
+.schem{display:block;width:100%;max-width:600px;margin:34px auto 6px;color:var(--ink);opacity:.75}
+@media (prefers-reduced-motion:reduce){.schem .electron{display:none}}
+
+/* ---- contents line ---- */
+.contents{font-family:var(--mono);font-size:12.5px;color:var(--mute);margin:8px 0 54px;letter-spacing:.3px}
+.contents a{margin-right:14px}
+
+/* ---- sections ---- */
+section{margin-bottom:64px}
+h2{
+  font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;display:flex;align-items:baseline;gap:12px;margin-bottom:18px;
+}
+h2 .n{color:var(--red)}
+h2::after{content:"";flex:1;border-bottom:1px solid var(--faint);transform:translateY(-4px)}
+section p{margin-bottom:14px;max-width:660px}
+.note{font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:10px}
+
+/* ---- toolbox ---- */
+.toolbox{font-family:var(--mono);font-size:13px;margin-top:20px;border-top:1px solid var(--faint)}
+.toolbox div{display:flex;gap:16px;padding:9px 2px;border-bottom:1px solid var(--faint)}
+.toolbox dt{color:var(--mute);min-width:90px;text-transform:uppercase;font-size:11px;letter-spacing:1px;padding-top:2px}
+.toolbox dd{flex:1}
+
+/* ---- revision table & index tables ---- */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px}
+th{
+  text-align:left;font-weight:600;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--mute);border-bottom:1.5px solid var(--ink);padding:8px 10px 8px 2px;white-space:nowrap;
+}
+td{border-bottom:1px solid var(--faint);padding:10px 10px 10px 2px;vertical-align:top}
+tr.row{cursor:pointer}
+tr.row:hover td{background:rgba(26,24,20,.035)}
+td.num{color:var(--mute);white-space:nowrap}
+td.status-active{color:var(--red);font-weight:600}
+td.status-done{font-weight:600}
+td.status-draft{color:var(--mute)}
+tr.row .tgl{color:var(--mute);display:inline-block;width:14px}
+tr.row.open .tgl{color:var(--red)}
+
+/* ---- expanded detail ---- */
+tr.detail{display:none}
+tr.detail.open{display:table-row}
+tr.detail>td{padding:0 0 26px;border-bottom:1px solid var(--faint)}
+.detail-inner{
+  border-left:2px solid var(--red);margin-top:14px;padding:4px 22px 2px;
+  font-family:var(--serif);font-size:15.5px;max-width:640px;
+}
+.detail-inner h5{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--mute);margin:16px 0 6px;
+}
+.detail-inner h5:first-child{margin-top:6px}
+.detail-inner ul{list-style:none;margin:4px 0 10px}
+.detail-inner li{padding-left:2px;margin-bottom:3px}
+.detail-inner li .mk{font-family:var(--mono);font-size:12.5px;color:var(--mute);margin-right:8px}
+.detail-inner li .mk.x{color:var(--ink)}
+.detail-inner li .mk.t{color:var(--red)}
+.detail-inner p{margin-bottom:10px}
+.detail-inner code{font-family:var(--mono);font-size:13px;background:rgba(26,24,20,.06);padding:1px 5px;border-radius:2px}
+
+/* ---- contact ---- */
+.contact{font-family:var(--mono);font-size:13.5px}
+.contact div{display:flex;gap:18px;padding:8px 2px;border-bottom:1px solid var(--faint)}
+.contact span:first-child{color:var(--mute);min-width:90px;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding-top:2px}
+
+/* ---- footer ---- */
+footer{
+  margin-top:90px;border-top:1.5px solid var(--ink);padding-top:14px;
+  font-family:var(--mono);font-size:11.5px;color:var(--mute);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+@media print{
+  body{background:none;max-width:none;padding:0}
+  .schem,.contents{display:none}
+  tr.detail{display:table-row}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="titleblock">
+    <span class="stamp">WORK IN PROGRESS</span>
+    <div>
+      <h1>Valentin-Gabriel Marincaș</h1>
+      <div class="sub">Engineering log &amp; component library</div>
+    </div>
+    <div class="cell-r">DOC. NO.<b>VGM-0001</b></div>
+    <div class="row2 sub" style="padding-top:8px">Politehnica University of Bucharest — Economic Engineering, Electrical / Electronic / Energy</div>
+    <div class="cell-r row2">REV <b id="doc-rev">—</b></div>
+  </div>
+
+  <svg class="schem" viewBox="0 0 600 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path id="tr" d="M0 13 H140 L148 4 L162 22 L176 4 L190 22 L204 4 L212 13 H306 M330 13 H600"
+          fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="312" y1="4" x2="312" y2="22" stroke="currentColor" stroke-width="1.6"/>
+    <line x1="324" y1="4" x2="324" y2="22" stroke="currentColor" stroke-width="1.6"/>
+    <circle class="electron" r="2.2" fill="#b3441e">
+      <animateMotion dur="9s" repeatCount="indefinite" rotate="none">
+        <mpath href="#tr"/>
+      </animateMotion>
+    </circle>
+  </svg>
+
+  <nav class="contents">
+    CONTENTS:
+    <a href="#abstract">1 abstract</a>
+    <a href="#projects">2 project index</a>
+    <a href="#vault">3 ip vault</a>
+    <a href="#contact">4 contact</a>
+    <a href="#revisions">5 revisions</a>
+  </nav>
+</header>
+
+<main>
+
+<section id="abstract">
+  <h2><span class="n">1</span> Abstract</h2>
+  <p>
+    This is a working document, not a portfolio. It tracks what I'm building, what's finished,
+    and what failed on the way — schematics, firmware, and the occasional piece of software
+    that has nothing to do with electronics.
+  </p>
+  <p>
+    I'm an engineering student in Bucharest. The interesting part of my degree is the overlap:
+    enough electronics to design a board, enough computer science to make it do something,
+    enough economics to know whether it was worth building.
+  </p>
+  <dl class="toolbox">
+    <div><dt>Hardware</dt><dd>PCB design · analog circuits · power electronics · embedded (STM32) · SPICE simulation</dd></div>
+    <div><dt>Software</dt><dd>C/C++ · Python · algorithms &amp; data structures · web fundamentals · git</dd></div>
+  </dl>
+</section>
+
+<section id="projects">
+  <h2><span class="n">2</span> Project Index</h2>
+  <p class="note" style="margin:0 0 14px">Click a row for full notes. Status is honest — most things here are unfinished.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody id="projects-body"></tbody>
+  </table>
+  </div>
+</section>
+
+<section id="vault">
+  <h2><span class="n">3</span> IP Vault</h2>
+  <p>
+    Reusable circuit blocks designed and validated by me, kept here so future projects don't
+    start from zero. A block only earns <span class="mono" style="font-size:13px">TESTED</span>
+    status after it has survived a real bench.
+  </p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>Part No.</th><th>Block</th><th>Rev</th><th>Validated</th><th>Status</th></tr></thead>
+    <tbody id="vault-body"></tbody>
+  </table>
+  </div>
+</section>
+
+<section id="contact">
+  <h2><span class="n">4</span> Contact</h2>
+  <div class="contact">
+    <div><span>email</span><span><a href="mailto:tinuku182@gmail.com">tinuku182@gmail.com</a></span></div>
+    <div><span>github</span><span>—</span></div>
+    <div><span>linkedin</span><span>—</span></div>
+  </div>
+</section>
+
+<section id="revisions">
+  <h2><span class="n">5</span> Revision History</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Rev</th><th>Date</th><th>Description</th></tr></thead>
+    <tbody id="rev-body"></tbody>
+  </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>VGM-0001 · © 2026 V.G. Marincaș</span>
+  <span>plain HTML — no framework, no build step, no tracking. <a href="view-source:" onclick="return false" title="Ctrl+U">view source</a></span>
+</footer>
+
+<script src="data.js"></script>
+<script>
+/* ================================================================
+   CONTENT lives in data.js — edit it through admin.html (local only).
+   This page renders PUBLIC items only. Private items live in
+   the private data file, which is never loaded here and never deployed.
+   markers in details: [x] done · [~] in progress · [ ] todo
+   ================================================================ */
+const DATA = window.SITE_DATA || { revisions:[], projects:[], vault:[] };
+const REVISIONS = DATA.revisions || [];
+const PROJECTS  = DATA.projects  || [];
+const IP_BLOCKS = DATA.vault     || [];
+
+/* ================================================================
+   RENDERING — no need to edit below
+   ================================================================ */
+const ST = {
+  active:["ACTIVE","status-active"],
+  done:["DONE","status-done"],
+  draft:["DRAFT","status-draft"]
+};
+
+function rows(list, mapper){
+  return list.map((it,i)=>{
+    const [label,cls] = ST[it.status] || ["—",""];
+    return mapper(it,i,label,cls) +
+      `<tr class="detail" data-d="${i}"><td colspan="6"><div class="detail-inner">${it.details}</div></td></tr>`;
+  }).join("");
+}
+
+document.getElementById("projects-body").innerHTML = rows(PROJECTS,(p,i,label,cls)=>`
+  <tr class="row" data-i="${i}">
+    <td class="num"><span class="tgl">+</span></td>
+    <td class="num">${p.no}</td>
+    <td>${p.title}</td>
+    <td class="num">${p.domain}</td>
+    <td class="${cls}">${label}</td>
+    <td class="num">${p.updated}</td>
+  </tr>`);
+
+document.getElementById("vault-body").innerHTML = rows(IP_BLOCKS,(b,i,label,cls)=>`
+  <tr class="row" data-i="${i}">
+    <td class="num"><span class="tgl">+</span></td>
+    <td class="num">${b.no}</td>
+    <td>${b.title}</td>
+    <td class="num">${b.rev}</td>
+    <td class="num">${b.validated}</td>
+    <td class="${cls}">${b.statusLabel}</td>
+  </tr>`);
+
+document.getElementById("rev-body").innerHTML = REVISIONS.map(r=>`
+  <tr><td class="num">${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+
+if(REVISIONS[0]) document.getElementById("doc-rev").textContent = REVISIONS[0][0] + " · " + REVISIONS[0][1];
+
+document.addEventListener("click", e=>{
+  const row = e.target.closest("tr.row");
+  if(!row) return;
+  const detail = row.nextElementSibling;
+  const open = detail.classList.toggle("open");
+  row.classList.toggle("open", open);
+  row.querySelector(".tgl").textContent = open ? "−" : "+";
+});
+</script>
+</body>
+</html>
