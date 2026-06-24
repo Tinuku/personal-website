@@ -4,7 +4,7 @@ window.SITE_DATA = {
   "revisions": [
     [
       "0.4",
-      "2026-06-22",
+      "2026-06-24",
       "Split index into Electronics, Software and Cybersecurity; logged the Wawiwa security certification and new infra, web and embedded projects."
     ],
     [
