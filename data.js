@@ -3,6 +3,11 @@
 window.SITE_DATA = {
   "revisions": [
     [
+      "0.4",
+      "2026-06-22",
+      "Split index into Electronics, Software and Cybersecurity; logged the Wawiwa security certification and new infra, web and embedded projects."
+    ],
+    [
       "0.3",
       "2026-06-12",
       "Restructured as a controlled document; IP vault expanded."
@@ -18,6 +23,125 @@ window.SITE_DATA = {
       "First internal draft."
     ]
   ],
-  "projects": [],
-  "vault": []
+  "projects": [
+    {
+      "no": "001",
+      "category": "electronics",
+      "title": "Smart Bench PSU",
+      "domain": "power / embedded",
+      "status": "active",
+      "updated": "2026-06",
+      "details": "      <h5>Overview<\/h5>\n      <p>A linear bench power supply (0–30 V / 0–3 A) controlled by an STM32 with a rotary-encoder\n      and OLED interface. Setpoints via DAC; analog constant-voltage / constant-current loops do\n      the actual regulation.<\/p>\n      <h5>Progress<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>Analog regulation stage simulated in LTspice<\/li>\n        <li><span class=\"mk x\">[x]<\/span>Control PCB rev A schematic complete<\/li>\n        <li><span class=\"mk t\">[~]<\/span>Firmware: encoder UI + calibration routine<\/li>\n        <li><span class=\"mk\">[ ]<\/span>Enclosure and front panel<\/li>\n      <\/ul>\n      <h5>Notes<\/h5>\n      <p>Thermal design of the pass transistor stage is the hard part. Learned why\n      <code>star grounding<\/code> matters when an ADC shares a board with a power stage.<\/p>"
+    },
+    {
+      "no": "002",
+      "category": "software",
+      "title": "Pathfinding Visualizer",
+      "domain": "software",
+      "status": "done",
+      "updated": "2025-11",
+      "details": "      <h5>Overview<\/h5>\n      <p>Browser app for visualizing Dijkstra, A* (Manhattan heuristic), BFS and DFS on a grid —\n      built to actually understand the differences instead of memorizing them. Includes maze\n      generation via recursive division and step-by-step animation.<\/p>\n      <h5>Post-mortem<\/h5>\n      <p>Would add bidirectional search and weighted terrain. The grid renderer should have been\n      a single canvas, not 2,000 divs.<\/p>"
+    },
+    {
+      "no": "003",
+      "category": "software",
+      "title": "RC Filter Designer (CLI)",
+      "domain": "software / dsp",
+      "status": "draft",
+      "updated": "2026-05",
+      "details": "      <h5>Overview<\/h5>\n      <p>Python tool: give it a corner frequency and topology, it returns the closest\n      <code>E24<\/code> standard component values and plots magnitude/phase with matplotlib.<\/p>\n      <h5>Progress<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>1st-order RC low/high-pass<\/li>\n        <li><span class=\"mk x\">[x]<\/span>E-series quantization with error report<\/li>\n        <li><span class=\"mk t\">[~]<\/span>Sallen-Key 2nd-order stages<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "005",
+      "category": "electronics",
+      "title": "Bare-Metal Robotics",
+      "domain": "embedded / robotics",
+      "status": "active",
+      "updated": "2026-06",
+      "details": "\n      <h5>Overview<\/h5>\n      <p>Autonomous robots written close to the metal in C/C++ — no RTOS, direct timing and peripheral control.<\/p>\n      <h5>Builds<\/h5>\n      <ul>\n        <li><span class=\"mk t\">[~]<\/span>Autonomous desktop robot — C/C++ behaviours, 3D-printed chassis, embedded display<\/li>\n        <li><span class=\"mk x\">[x]<\/span>Line-follower (Arduino) — real-time sensor processing and logic control loops for navigation<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "006",
+      "category": "electronics",
+      "title": "Smart Agriculture Monitor",
+      "domain": "iot / telemetry",
+      "status": "active",
+      "updated": "2026-06",
+      "details": "\n      <h5>Overview<\/h5>\n      <p>A sensor-powered environmental monitoring system for automated agriculture, built around low-power telemetry data acquisition.<\/p>\n      <h5>Progress<\/h5>\n      <ul>\n        <li><span class=\"mk t\">[~]<\/span>Sensor front-end and telemetry pipeline<\/li>\n        <li><span class=\"mk\">[ ]<\/span>Automated control loop for actuation<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "007",
+      "category": "electronics",
+      "title": "GaN Half-Bridge Converter",
+      "domain": "power / gan",
+      "status": "active",
+      "updated": "2026-06",
+      "details": "\n      <h5>Overview<\/h5>\n      <p>A Gallium Nitride (<code>GaN<\/code>) half-bridge converter targeting high-frequency switching and high power efficiency.<\/p>\n      <h5>Progress<\/h5>\n      <ul>\n        <li><span class=\"mk t\">[~]<\/span>Half-bridge power stage design and assembly<\/li>\n        <li><span class=\"mk\">[ ]<\/span>High-frequency switching characterisation and efficiency sweep<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "008",
+      "category": "software",
+      "title": "Survey Management Platform",
+      "domain": "web / fullstack",
+      "status": "done",
+      "updated": "2026",
+      "details": "\n      <h5>Overview<\/h5>\n      <p>Enterprise survey-management platform built as a university project for <b>RosenGroup<\/b>, with hardened\n      Authentication &amp; Authorization (<code>AuthN/AuthZ<\/code>) pipelines.<\/p>\n      <h5>Highlights<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>Secure admin / user CRUD operations<\/li>\n        <li><span class=\"mk x\">[x]<\/span>Strict database schemas enforcing data integrity<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "009",
+      "category": "cybersecurity",
+      "title": "Cybersecurity Certification",
+      "domain": "blue team / training",
+      "status": "done",
+      "updated": "2026-06",
+      "details": "\n      <h5>Credential<\/h5>\n      <p>Cybersecurity Certification — <b>Wawiwa Tech Training / NewTech Academy<\/b>, June 2026. Scored\n      <b>9.55 / 10<\/b> on the comprehensive technical exam and final capstone presentation.<\/p>\n      <h5>Coverage<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>Vulnerability assessment, network traffic analysis and incident response in simulated enterprise environments<\/li>\n        <li><span class=\"mk x\">[x]<\/span>SIEM dashboard configuration and monitoring for threat hunting and log analysis<\/li>\n        <li><span class=\"mk x\">[x]<\/span>Hardening applied to self-hosted Linux, containerized deployments and bare-metal hypervisors<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "010",
+      "category": "cybersecurity",
+      "title": "Virtualization & Container Security",
+      "domain": "infra / hardening",
+      "status": "active",
+      "updated": "2026-06",
+      "details": "\n      <h5>Overview<\/h5>\n      <p>A security-focused homelab: a 3-node bare-metal hypervisor cluster on <code>Proxmox VE<\/code>\n      (Lenovo LOQ 15APH8 plus secondary hardware) running isolated environments.<\/p>\n      <h5>Work<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>Secure Linux server administration (Debian, Arch, Ubuntu) — permissions, filesystem layout, firewall rules<\/li>\n        <li><span class=\"mk t\">[~]<\/span>Containerized microservices on Docker and Kubernetes (<code>K3s<\/code>) with network isolation<\/li>\n      <\/ul>"
+    },
+    {
+      "no": "011",
+      "category": "cybersecurity",
+      "title": "RFID Keycard — RBAC Simulation",
+      "domain": "appsec / rbac",
+      "status": "done",
+      "updated": "2026",
+      "details": "\n      <h5>Overview<\/h5>\n      <p>A security simulation application (\"RFID Keycard\") enforcing multi-tier Role-Based Access Control\n      (<code>RBAC<\/code>).<\/p>\n      <h5>Clearance tiers<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>Staff · Attendee · Admin clearance levels<\/li>\n        <li><span class=\"mk x\">[x]<\/span>Access decisions gated strictly by role<\/li>\n      <\/ul>"
+    }
+  ],
+  "vault": [
+    {
+      "no": "IPV-001",
+      "title": "Buck converter 5 V / 2 A",
+      "rev": "B",
+      "validated": "2026-03",
+      "status": "done",
+      "statusLabel": "TESTED",
+      "details": "      <h5>Specification<\/h5>\n      <ul>\n        <li><span class=\"mk\">·<\/span>Input 7–24 V → output 5 V @ 2 A, synchronous<\/li>\n        <li><span class=\"mk\">·<\/span>Efficiency 92 % at full load, 24 V in<\/li>\n        <li><span class=\"mk\">·<\/span>Ripple &lt; 30 mVpp<\/li>\n      <\/ul>\n      <h5>Validation<\/h5>\n      <p>Load-step tested 0.2 A → 2 A; thermal-imaged at full load for one hour. Rev B fixed\n      feedback-trace noise found in rev A — the hot loop was fine, the sense line wasn't.<\/p>"
+    },
+    {
+      "no": "IPV-002",
+      "title": "Precision high-side current sense",
+      "rev": "A",
+      "validated": "2026-01",
+      "status": "done",
+      "statusLabel": "TESTED",
+      "details": "      <h5>Specification<\/h5>\n      <ul>\n        <li><span class=\"mk\">·<\/span>0–3 A high-side, 10 mΩ shunt, amplified to 0–3.0 V<\/li>\n        <li><span class=\"mk\">·<\/span>±1 % accuracy after single-point calibration<\/li>\n        <li><span class=\"mk\">·<\/span>RC-filtered, ADC-ready output<\/li>\n      <\/ul>\n      <h5>Notes<\/h5>\n      <p>Kelvin connection on the shunt is mandatory — the first breadboard version taught me\n      that the hard way. Currently used inside project 001.<\/p>"
+    },
+    {
+      "no": "IPV-003",
+      "title": "USB-C 5 V power input front-end",
+      "rev": "A (draft)",
+      "validated": "—",
+      "status": "draft",
+      "statusLabel": "IN DESIGN",
+      "details": "      <h5>Goal<\/h5>\n      <p>A drop-in schematic and layout snippet so every future board gets robust USB-C power\n      without re-deriving it: correct 5.1 kΩ CC pull-downs, TVS array, polyfuse,\n      reverse-polarity guard.<\/p>\n      <h5>Progress<\/h5>\n      <ul>\n        <li><span class=\"mk x\">[x]<\/span>Schematic complete<\/li>\n        <li><span class=\"mk t\">[~]<\/span>Layout snippet + DRC<\/li>\n        <li><span class=\"mk\">[ ]<\/span>Bench validation board<\/li>\n      <\/ul>"
+    }
+  ]
 };

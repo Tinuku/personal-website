@@ -176,8 +176,8 @@ textarea{min-height:150px;resize:vertical;line-height:1.5;white-space:pre}
 
 <main>
   <section class="sec">
-    <div class="sec-h"><span class="n">2</span> Project Index</div>
-    <div class="sec-note">Status: active · done · draft. Details accept HTML (see preview). Markers: [x] done, [~] in progress, [ ] todo.</div>
+    <div class="sec-h"><span class="n">2</span> Projects</div>
+    <div class="sec-note">Category routes each project to its section on the live site — electronics · software · cybersecurity. Status: active · done · draft. Details accept HTML (see preview). Markers: [x] done, [~] in progress, [ ] todo.</div>
     <div id="projects-list"></div>
     <button class="btn addbtn" data-add="project">+ add project</button>
   </section>
@@ -264,6 +264,11 @@ function projectCard(p){
       <div class="fld"><label>Updated</label><input class="f-updated" value="${esc(p.updated)}" placeholder="2026-06"></div>
       <div class="fld full"><label>Title</label><input class="f-title" value="${esc(p.title)}" placeholder="Project name"></div>
       <div class="fld"><label>Domain</label><input class="f-domain" value="${esc(p.domain)}" placeholder="power / embedded"></div>
+      <div class="fld"><label>Category (→ section)</label>
+        <select class="f-category">
+          ${['electronics','software','cybersecurity'].map(s=>`<option ${(p.category||'electronics')===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
       <div class="fld"><label>Status</label>
         <select class="f-status">
           ${['active','done','draft'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}
@@ -360,7 +365,7 @@ const $rev = document.getElementById('rev-list');
 /* ---------- add buttons ---------- */
 document.querySelectorAll('[data-add]').forEach(btn=>{
   btn.onclick=()=>{
-    if(btn.dataset.add==='project'){ const c=projectCard({_vis:'private',no:'',title:'',domain:'',status:'active',updated:'',details:'\n<h5>Overview</h5>\n<p></p>'}); $proj.appendChild(c); c.scrollIntoView({behavior:'smooth',block:'center'}); }
+    if(btn.dataset.add==='project'){ const c=projectCard({_vis:'private',no:'',category:'electronics',title:'',domain:'',status:'active',updated:'',details:'\n<h5>Overview</h5>\n<p></p>'}); $proj.appendChild(c); c.scrollIntoView({behavior:'smooth',block:'center'}); }
     if(btn.dataset.add==='vault'){ const c=vaultCard({_vis:'private',no:'',title:'',rev:'A',validated:'—',status:'draft',statusLabel:'IN DESIGN',details:'\n<h5>Specification</h5>\n<ul>\n  <li><span class="mk">·</span></li>\n</ul>'}); $vault.appendChild(c); c.scrollIntoView({behavior:'smooth',block:'center'}); }
     if(btn.dataset.add==='rev'){ const today=new Date().toISOString().slice(0,10); const r=revRow(['',today,'']); $rev.insertBefore(r,$rev.firstChild); }
     refresh();
@@ -370,7 +375,7 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
 /* ---------- collect + serialize ---------- */
 function collectProjects(){
   return [...$proj.querySelectorAll('.card')].map(c=>({
-    _vis:c.dataset.vis, no:val(c,'.f-no'), title:val(c,'.f-title'),
+    _vis:c.dataset.vis, no:val(c,'.f-no'), category:val(c,'.f-category'), title:val(c,'.f-title'),
     domain:val(c,'.f-domain'), status:val(c,'.f-status'),
     updated:val(c,'.f-updated'), details:val(c,'.f-details')
   }));

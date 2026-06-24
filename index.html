@@ -167,10 +167,12 @@ footer{
   <nav class="contents">
     CONTENTS:
     <a href="#abstract">1 abstract</a>
-    <a href="#projects">2 project index</a>
-    <a href="#vault">3 ip vault</a>
-    <a href="#contact">4 contact</a>
-    <a href="#revisions">5 revisions</a>
+    <a href="#electronics">2 electronics</a>
+    <a href="#software">3 software</a>
+    <a href="#cyber">4 cybersecurity</a>
+    <a href="#vault">5 ip vault</a>
+    <a href="#contact">6 contact</a>
+    <a href="#revisions">7 revisions</a>
   </nav>
 </header>
 
@@ -189,24 +191,47 @@ footer{
     enough economics to know whether it was worth building.
   </p>
   <dl class="toolbox">
-    <div><dt>Hardware</dt><dd>PCB design · analog circuits · power electronics · embedded (STM32) · SPICE simulation</dd></div>
-    <div><dt>Software</dt><dd>C/C++ · Python · algorithms &amp; data structures · web fundamentals · git</dd></div>
+    <div><dt>Hardware / OT</dt><dd>embedded systems architecture · bare-metal programming · IoT data acquisition · power electronics · PCB design · SPICE</dd></div>
+    <div><dt>Software</dt><dd>C · C++ · Python · Bash · JavaScript · algorithms &amp; data structures · git</dd></div>
+    <div><dt>Security / infra</dt><dd>Linux sysadmin (Debian · Arch · Ubuntu) · Proxmox VE · Docker · Kubernetes (K3s) · SIEM · active defense · IAM / RBAC</dd></div>
   </dl>
 </section>
 
-<section id="projects">
-  <h2><span class="n">2</span> Project Index</h2>
-  <p class="note" style="margin:0 0 14px">Click a row for full notes. Status is honest — most things here are unfinished.</p>
+<section id="electronics">
+  <h2><span class="n">2</span> Electronics</h2>
+  <p class="note" style="margin:0 0 14px">Hardware, power and embedded work. Click a row for full notes — status is honest, most things here are unfinished.</p>
   <div class="tablewrap">
   <table>
     <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
-    <tbody id="projects-body"></tbody>
+    <tbody id="electronics-body"></tbody>
+  </table>
+  </div>
+</section>
+
+<section id="software">
+  <h2><span class="n">3</span> Software</h2>
+  <p class="note" style="margin:0 0 14px">Tools, apps and algorithms — the code that has nothing to do with a soldering iron.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody id="software-body"></tbody>
+  </table>
+  </div>
+</section>
+
+<section id="cyber">
+  <h2><span class="n">4</span> Cybersecurity</h2>
+  <p class="note" style="margin:0 0 14px">Security work — labs, CTFs, write-ups and tooling.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody id="cyber-body"></tbody>
   </table>
   </div>
 </section>
 
 <section id="vault">
-  <h2><span class="n">3</span> IP Vault</h2>
+  <h2><span class="n">5</span> IP Vault</h2>
   <p>
     Reusable circuit blocks designed and validated by me, kept here so future projects don't
     start from zero. A block only earns <span class="mono" style="font-size:13px">TESTED</span>
@@ -221,7 +246,7 @@ footer{
 </section>
 
 <section id="contact">
-  <h2><span class="n">4</span> Contact</h2>
+  <h2><span class="n">6</span> Contact</h2>
   <div class="contact">
     <div><span>email</span><span><a href="mailto:tinuku182@gmail.com">tinuku182@gmail.com</a></span></div>
     <div><span>github</span><span>—</span></div>
@@ -230,7 +255,7 @@ footer{
 </section>
 
 <section id="revisions">
-  <h2><span class="n">5</span> Revision History</h2>
+  <h2><span class="n">7</span> Revision History</h2>
   <div class="tablewrap">
   <table>
     <thead><tr><th>Rev</th><th>Date</th><th>Description</th></tr></thead>
@@ -246,7 +271,9 @@ footer{
   <span>plain HTML — no framework, no build step, no tracking. <a href="view-source:" onclick="return false" title="Ctrl+U">view source</a></span>
 </footer>
 
-<script src="data.js"></script>
+<!-- Load data.js with a cache-bust so a fresh push shows up immediately. Without this,
+     GitHub Pages' CDN and the browser cache data.js and keep serving the old copy. -->
+<script>document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 /* ================================================================
    CONTENT lives in data.js — edit it through admin.html (local only).
@@ -276,7 +303,7 @@ function rows(list, mapper){
   }).join("");
 }
 
-document.getElementById("projects-body").innerHTML = rows(PROJECTS,(p,i,label,cls)=>`
+const projMapper = (p,i,label,cls)=>`
   <tr class="row" data-i="${i}">
     <td class="num"><span class="tgl">+</span></td>
     <td class="num">${p.no}</td>
@@ -284,7 +311,17 @@ document.getElementById("projects-body").innerHTML = rows(PROJECTS,(p,i,label,cl
     <td class="num">${p.domain}</td>
     <td class="${cls}">${label}</td>
     <td class="num">${p.updated}</td>
-  </tr>`);
+  </tr>`;
+
+function renderProjects(bodyId, category){
+  const list = PROJECTS.filter(p => (p.category || "electronics") === category);
+  document.getElementById(bodyId).innerHTML = list.length
+    ? rows(list, projMapper)
+    : `<tr><td colspan="6" class="num" style="color:var(--mute);padding:14px 2px">— nothing logged here yet —</td></tr>`;
+}
+renderProjects("electronics-body","electronics");
+renderProjects("software-body","software");
+renderProjects("cyber-body","cybersecurity");
 
 document.getElementById("vault-body").innerHTML = rows(IP_BLOCKS,(b,i,label,cls)=>`
   <tr class="row" data-i="${i}">
