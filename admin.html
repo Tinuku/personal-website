@@ -177,7 +177,7 @@ textarea{min-height:150px;resize:vertical;line-height:1.5;white-space:pre}
 <main>
   <section class="sec">
     <div class="sec-h"><span class="n">2</span> Projects</div>
-    <div class="sec-note">Category routes each project to its section on the live site — electronics · software · cybersecurity. Status: active · done · draft. Details accept HTML (see preview). Markers: [x] done, [~] in progress, [ ] todo.</div>
+    <div class="sec-note">Category routes each project to its section on the live site — cad · electronics · software · cybersecurity. Status: active · done · draft. Details accept HTML (see preview). Markers: [x] done, [~] in progress, [ ] todo.</div>
     <div id="projects-list"></div>
     <button class="btn addbtn" data-add="project">+ add project</button>
   </section>
@@ -266,7 +266,7 @@ function projectCard(p){
       <div class="fld"><label>Domain</label><input class="f-domain" value="${esc(p.domain)}" placeholder="power / embedded"></div>
       <div class="fld"><label>Category (→ section)</label>
         <select class="f-category">
-          ${['electronics','software','cybersecurity'].map(s=>`<option ${(p.category||'electronics')===s?'selected':''}>${s}</option>`).join('')}
+          ${['cad','electronics','software','cybersecurity'].map(s=>`<option ${(p.category||'electronics')===s?'selected':''}>${s}</option>`).join('')}
         </select>
       </div>
       <div class="fld"><label>Status</label>

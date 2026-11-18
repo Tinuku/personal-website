@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VGM-0001 — Valentin-Gabriel Marincaș, engineering log</title>
-<meta name="description" content="Engineering log and component library of Valentin-Gabriel Marincaș.">
+<meta name="description" content="Engineering log of Valentin-Gabriel Marincaș: CAD, electronics, software and cybersecurity.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -145,7 +145,7 @@ footer{
     <span class="stamp">WORK IN PROGRESS</span>
     <div>
       <h1>Valentin-Gabriel Marincaș</h1>
-      <div class="sub">Engineering log &amp; component library</div>
+      <div class="sub">Engineering log</div>
     </div>
     <div class="cell-r">DOC. NO.<b>VGM-0001</b></div>
     <div class="row2 sub" style="padding-top:8px">Politehnica University of Bucharest — Economic Engineering in the Fields of Electrical Engineering, Electronics, and Energy</div>
@@ -167,10 +167,10 @@ footer{
   <nav class="contents">
     CONTENTS:
     <a href="#abstract">1 abstract</a>
-    <a href="#electronics">2 electronics</a>
-    <a href="#software">3 software</a>
-    <a href="#cyber">4 cybersecurity</a>
-    <a href="#vault">5 ip vault</a>
+    <a href="#cad">2 cad</a>
+    <a href="#electronics">3 electronics</a>
+    <a href="#software">4 software</a>
+    <a href="#cyber">5 cybersecurity</a>
     <a href="#contact">6 contact</a>
     <a href="#revisions">7 revisions</a>
   </nav>
@@ -182,24 +182,36 @@ footer{
   <h2><span class="n">1</span> Abstract</h2>
   <p>
     This is a working document, not a portfolio. It tracks what I'm building, what's finished,
-    and what failed on the way — schematics, firmware, and the occasional piece of software
+    and what failed on the way — drawings, firmware, and the occasional piece of software
     that has nothing to do with electronics.
   </p>
   <p>
     I'm an engineering student in Bucharest. The interesting part of my degree is the overlap:
-    enough electronics to design a board, enough computer science to make it do something,
-    enough economics to know whether it was worth building.
+    enough electronics to wire up a robot, enough computer science to make it do something,
+    enough technical drawing to put it on paper, and enough economics to know whether it was worth building.
   </p>
   <dl class="toolbox">
-    <div><dt>Hardware / OT</dt><dd>embedded systems architecture · bare-metal programming · IoT data acquisition · power electronics · PCB design · SPICE</dd></div>
+    <div><dt>CAD</dt><dd>AutoCAD (2D technical drawing) · Fusion 360 (3D modelling) · 3D printing</dd></div>
+    <div><dt>Hardware</dt><dd>Arduino · C/C++ for microcontrollers · hobby electronics</dd></div>
     <div><dt>Software</dt><dd>C · C++ · Python · Bash · JavaScript · algorithms &amp; data structures · git</dd></div>
-    <div><dt>Security / infra</dt><dd>Linux sysadmin (Debian · Arch · Ubuntu) · Proxmox VE · Docker · Kubernetes (K3s) · SIEM · active defense · IAM / RBAC</dd></div>
+    <div><dt>Security / infra</dt><dd>Linux (Debian · Ubuntu · Arch) · Proxmox VE · Docker · SIEM log analysis (course labs)</dd></div>
   </dl>
 </section>
 
+<section id="cad">
+  <h2><span class="n">2</span> CAD</h2>
+  <p class="note" style="margin:0 0 14px">2D drawings in AutoCAD, 3D parts in Fusion 360. Interactive models and downloads: <a href="https://tinuku.github.io/cad-portofolio/">CAD portfolio</a>.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody id="cad-body"></tbody>
+  </table>
+  </div>
+</section>
+
 <section id="electronics">
-  <h2><span class="n">2</span> Electronics</h2>
-  <p class="note" style="margin:0 0 14px">Hardware, power and embedded work. Click a row for full notes — status is honest, most things here are unfinished.</p>
+  <h2><span class="n">3</span> Electronics</h2>
+  <p class="note" style="margin:0 0 14px">Embedded and robotics work. Click a row for full notes — status is honest, most things here are unfinished.</p>
   <div class="tablewrap">
   <table>
     <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
@@ -209,7 +221,7 @@ footer{
 </section>
 
 <section id="software">
-  <h2><span class="n">3</span> Software</h2>
+  <h2><span class="n">4</span> Software</h2>
   <p class="note" style="margin:0 0 14px">Tools, apps and algorithms — the code that has nothing to do with a soldering iron.</p>
   <div class="tablewrap">
   <table>
@@ -220,8 +232,8 @@ footer{
 </section>
 
 <section id="cyber">
-  <h2><span class="n">4</span> Cybersecurity</h2>
-  <p class="note" style="margin:0 0 14px">Security work — labs, CTFs, write-ups and tooling.</p>
+  <h2><span class="n">5</span> Cybersecurity</h2>
+  <p class="note" style="margin:0 0 14px">Security training, my homelab and access-control work.</p>
   <div class="tablewrap">
   <table>
     <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
@@ -230,26 +242,12 @@ footer{
   </div>
 </section>
 
-<section id="vault">
-  <h2><span class="n">5</span> IP Vault</h2>
-  <p>
-    Reusable circuit blocks designed and validated by me, kept here so future projects don't
-    start from zero. A block only earns <span class="mono" style="font-size:13px">TESTED</span>
-    status after it has survived a real bench.
-  </p>
-  <div class="tablewrap">
-  <table>
-    <thead><tr><th></th><th>Part No.</th><th>Block</th><th>Rev</th><th>Validated</th><th>Status</th></tr></thead>
-    <tbody id="vault-body"></tbody>
-  </table>
-  </div>
-</section>
-
 <section id="contact">
   <h2><span class="n">6</span> Contact</h2>
   <div class="contact">
     <div><span>email</span><span><a href="mailto:tinuku182@gmail.com">tinuku182@gmail.com</a></span></div>
-    <div><span>github</span><span>—</span></div>
+    <div><span>github</span><span><a href="https://github.com/Tinuku">github.com/Tinuku</a></span></div>
+    <div><span>cad</span><span><a href="https://tinuku.github.io/cad-portofolio/">tinuku.github.io/cad-portofolio</a></span></div>
     <div><span>linkedin</span><span>—</span></div>
   </div>
 </section>
@@ -281,10 +279,9 @@ footer{
    the private data file, which is never loaded here and never deployed.
    markers in details: [x] done · [~] in progress · [ ] todo
    ================================================================ */
-const DATA = window.SITE_DATA || { revisions:[], projects:[], vault:[] };
+const DATA = window.SITE_DATA || { revisions:[], projects:[] };
 const REVISIONS = DATA.revisions || [];
 const PROJECTS  = DATA.projects  || [];
-const IP_BLOCKS = DATA.vault     || [];
 
 /* ================================================================
    RENDERING — no need to edit below
@@ -319,19 +316,10 @@ function renderProjects(bodyId, category){
     ? rows(list, projMapper)
     : `<tr><td colspan="6" class="num" style="color:var(--mute);padding:14px 2px">— nothing logged here yet —</td></tr>`;
 }
+renderProjects("cad-body","cad");
 renderProjects("electronics-body","electronics");
 renderProjects("software-body","software");
 renderProjects("cyber-body","cybersecurity");
-
-document.getElementById("vault-body").innerHTML = rows(IP_BLOCKS,(b,i,label,cls)=>`
-  <tr class="row" data-i="${i}">
-    <td class="num"><span class="tgl">+</span></td>
-    <td class="num">${b.no}</td>
-    <td>${b.title}</td>
-    <td class="num">${b.rev}</td>
-    <td class="num">${b.validated}</td>
-    <td class="${cls}">${b.statusLabel}</td>
-  </tr>`);
 
 document.getElementById("rev-body").innerHTML = REVISIONS.map(r=>`
   <tr><td class="num">${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td></tr>`).join("");
