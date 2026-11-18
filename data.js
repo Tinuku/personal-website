@@ -5,7 +5,7 @@ window.SITE_DATA = {
     [
       "0.5",
       "2026-11-18",
-      "Added a CAD section (AutoCAD and Fusion 360); trimmed the log to work that is finished or actually in progress."
+      "Added a CAD section and the saints map; trimmed the log to work that is finished or actually in progress."
     ],
     [
       "0.4",
@@ -62,6 +62,15 @@ window.SITE_DATA = {
     },
     {
       "no": "005",
+      "category": "software",
+      "title": "Map of Romania's Saints",
+      "domain": "web / maps",
+      "status": "done",
+      "updated": "2026-11",
+      "details": "\n      <h5>Overview</h5>\n      <p>An interactive map of the saints canonised by the Romanian Orthodox Church, including those canonised in 2025. Built with <code>Leaflet</code> and OpenStreetMap; plain HTML and JavaScript, no build step. <a href=\"https://tinuku.github.io/harta-sfinti/\">Open the map</a>.</p>\n      <h5>Features</h5>\n      <ul>\n        <li><span class=\"mk x\">[x]</span>82 saints with short biographies in Romanian and English</li>\n        <li><span class=\"mk x\">[x]</span>Portraits loaded automatically from Wikipedia, with a fallback when none exists</li>\n        <li><span class=\"mk x\">[x]</span>Markers grouped into numbered clusters where several saints share a place</li>\n        <li><span class=\"mk x\">[x]</span>Search that ignores diacritics, plus filters by category</li>\n      </ul>"
+    },
+    {
+      "no": "006",
       "category": "cybersecurity",
       "title": "Cybersecurity Certification",
       "domain": "blue team / training",
@@ -70,7 +79,7 @@ window.SITE_DATA = {
       "details": "\n      <h5>Credential</h5>\n      <p>Cybersecurity Certification — <b>Wawiwa Tech Training / NewTech Academy</b>, June 2026. Final grade\n      <b>9.55 / 10</b> on the technical exam and capstone presentation.</p>\n      <h5>Course labs (simulated company networks)</h5>\n      <ul>\n        <li><span class=\"mk x\">[x]</span>Vulnerability assessment and network traffic analysis</li>\n        <li><span class=\"mk x\">[x]</span>Incident response procedures</li>\n        <li><span class=\"mk x\">[x]</span>SIEM dashboards for log analysis and threat hunting</li>\n        <li><span class=\"mk x\">[x]</span>Hardening Linux systems and containers</li>\n      </ul>"
     },
     {
-      "no": "006",
+      "no": "007",
       "category": "cybersecurity",
       "title": "Homelab",
       "domain": "infra / linux",
@@ -79,7 +88,7 @@ window.SITE_DATA = {
       "details": "\n      <h5>Overview</h5>\n      <p>I run <code>Proxmox VE</code> on my own hardware to host Linux virtual machines and <code>Docker</code> containers, and use it to practise what the course taught.</p>\n      <h5>Work</h5>\n      <ul>\n        <li><span class=\"mk x\">[x]</span>Linux VMs (Debian, Ubuntu, Arch) — users, permissions, firewall rules</li>\n        <li><span class=\"mk t\">[~]</span>Hardening the services I run</li>\n      </ul>"
     },
     {
-      "no": "007",
+      "no": "008",
       "category": "cybersecurity",
       "title": "RFID Keycard Access Simulation",
       "domain": "appsec / access control",
