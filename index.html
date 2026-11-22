@@ -5,188 +5,330 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VGM-0001 — Valentin-Gabriel Marincaș, engineering log</title>
 <meta name="description" content="Engineering log of Valentin-Gabriel Marincaș: CAD, electronics, software and cybersecurity.">
+<meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&display=swap" rel="stylesheet">
+<script>
+/* pick theme before first paint: saved choice > OS setting */
+(function(){var t;try{t=localStorage.getItem("vgm-theme")}catch(e){}
+if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"blueprint":"paper";
+document.documentElement.dataset.theme=t;})();
+</script>
 <style>
 :root{
-  --paper:#f4f1ea;
-  --ink:#1a1814;
-  --faint:#d9d3c4;
-  --mute:#6e6555;
-  --red:#b3441e;
+  --paper:#f4f1ea; --ink:#1a1814; --faint:#d9d3c4; --mute:#6e6555; --red:#b3441e;
+  --grid:rgba(26,24,20,.045); --grid-major:rgba(26,24,20,.07); --hover:rgba(26,24,20,.035);
   --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
-  --serif:Georgia,'Times New Roman',serif;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  interpolate-size:allow-keywords;
+}
+[data-theme="blueprint"]{
+  --paper:#12233a; --ink:#e3ebf3; --faint:#2b4262; --mute:#8ea4bd; --red:#ff8a5c;
+  --grid:rgba(227,235,243,.04); --grid-major:rgba(227,235,243,.075); --hover:rgba(227,235,243,.04);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{
   background:var(--paper);
   background-image:
-    linear-gradient(rgba(26,24,20,.045) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(26,24,20,.045) 1px,transparent 1px);
-  background-size:32px 32px;
+    linear-gradient(var(--grid-major) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-major) 1px,transparent 1px),
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:160px 160px,160px 160px,32px 32px,32px 32px;
   color:var(--ink);
-  font:16.5px/1.7 var(--serif);
-  max-width:780px;margin:0 auto;
-  padding:56px 24px 110px;
+  font:17px/1.65 var(--serif);
+  font-optical-sizing:auto;
+  padding:36px 18px 90px;
+  transition:background-color .3s,color .3s;
 }
-::selection{background:rgba(179,68,30,.18)}
-a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px}
+::selection{background:color-mix(in srgb,var(--red) 22%,transparent)}
+a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;text-decoration-thickness:1px}
 a:hover{color:var(--red)}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 .mono{font-family:var(--mono)}
+.mute{color:var(--mute)}
+
+/* ---- drawing frame with zone markers ---- */
+.frame{max-width:880px;margin:0 auto;position:relative;border:1px solid var(--ink);padding:20px}
+.sheet{border:1.5px solid var(--ink);padding:34px 34px 26px;background:color-mix(in srgb,var(--paper) 55%,transparent);position:relative}
+.zones{position:absolute;display:flex;font:500 10px var(--mono);color:var(--mute);pointer-events:none}
+.zones span{flex:1;display:grid;place-items:center}
+.zones.h{left:20px;right:20px;height:20px}
+.zones.h span+span{border-left:1px solid var(--ink)}
+.zones.h.t{top:0}.zones.h.b{bottom:0}
+.zones.v{top:20px;bottom:20px;width:20px;flex-direction:column}
+.zones.v span+span{border-top:1px solid var(--ink)}
+.zones.v.l{left:0}.zones.v.r{right:0}
+@media(max-width:620px){
+  body{padding:14px 8px 70px}
+  .frame{padding:8px}.zones{display:none}
+  .sheet{padding:22px 16px 18px}
+}
 
 /* ---- title block ---- */
 .titleblock{
   border:1.5px solid var(--ink);position:relative;
-  display:grid;grid-template-columns:1fr auto;
-  font-family:var(--mono);font-size:12.5px;
-  background:rgba(244,241,234,.7);
+  display:grid;grid-template-columns:1fr 128px 128px;
+  font:12px/1.35 var(--mono);
 }
-.titleblock>div{padding:10px 16px}
-.titleblock .cell-r{border-left:1.5px solid var(--ink);text-align:right;color:var(--mute);min-width:170px}
-.titleblock .row2{border-top:1px solid var(--faint)}
-.titleblock h1{font-family:var(--serif);font-size:clamp(22px,4.5vw,30px);font-weight:600;letter-spacing:-.3px;line-height:1.25}
-.titleblock .sub{color:var(--mute);margin-top:2px}
-.titleblock .cell-r b{display:block;color:var(--ink);font-weight:600}
+.titleblock>div{padding:8px 12px;border-left:1px solid var(--ink);border-top:1px solid var(--ink)}
+.tb-name{grid-row:span 2;border-left:0!important;border-top:0!important;display:flex;flex-direction:column;justify-content:center;padding:14px 16px!important}
+.tb-inst{border-left:0!important;color:var(--mute);font-size:11.5px}
+.titleblock .r1{border-top:0}
+.titleblock h1{font:600 clamp(24px,4.6vw,34px)/1.15 var(--serif);letter-spacing:-.4px}
+.titleblock .sub{color:var(--mute);margin-top:4px;letter-spacing:.4px}
+.f{color:var(--mute);font-size:10px;letter-spacing:1.2px;text-transform:uppercase}
+.f b{display:block;color:var(--ink);font-size:12.5px;font-weight:600;letter-spacing:.2px;text-transform:none;margin-top:2px}
 .stamp{
-  position:absolute;top:-16px;right:-10px;transform:rotate(-6deg);
-  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:2.5px;
+  position:absolute;top:-26px;right:-14px;transform:rotate(-5deg);
+  font:600 11px var(--mono);letter-spacing:2.5px;
   color:var(--red);border:2.5px double var(--red);border-radius:3px;
-  padding:5px 11px;background:rgba(244,241,234,.85);
+  padding:5px 11px;background:var(--paper);
+  mix-blend-mode:multiply;
 }
-@media(max-width:560px){.stamp{right:0;top:-20px;font-size:10px}}
+[data-theme="blueprint"] .stamp{mix-blend-mode:normal}
+@media(max-width:620px){
+  .titleblock{grid-template-columns:1fr 1fr}
+  .tb-name{grid-column:1/-1;grid-row:auto}
+  .titleblock .lc{border-left:0}
+  .tb-inst{grid-column:1/-1}
+  .titleblock .r1{border-top:1px solid var(--ink)}
+  .stamp{right:-4px;top:-20px;font-size:10px}
+}
 
-/* ---- schematic divider ---- */
-.schem{display:block;width:100%;max-width:600px;margin:34px auto 6px;color:var(--ink);opacity:.75}
+/* ---- schematic divider + stats ---- */
+.schem{display:block;width:100%;max-width:640px;margin:30px auto 4px;color:var(--ink);opacity:.75}
 @media (prefers-reduced-motion:reduce){.schem .electron{display:none}}
+.stats{font:12px var(--mono);color:var(--mute);text-align:center;letter-spacing:.3px}
+.stats b{color:var(--ink);font-weight:600}
+.stats .a{color:var(--red)}
 
-/* ---- contents line ---- */
-.contents{font-family:var(--mono);font-size:12.5px;color:var(--mute);margin:8px 0 54px;letter-spacing:.3px}
-.contents a{margin-right:14px}
+/* ---- sticky contents bar ---- */
+.bar{
+  position:sticky;top:0;z-index:10;margin:26px -34px 46px;padding:10px 34px;
+  display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;
+  font:12px var(--mono);letter-spacing:.3px;color:var(--mute);
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border-top:1px solid var(--faint);border-bottom:1px solid var(--faint);
+}
+.bar nav{display:flex;gap:4px 14px;flex-wrap:wrap;flex:1}
+.bar nav a{text-decoration:none;color:var(--mute);padding:2px 0;border-bottom:1.5px solid transparent}
+.bar nav a:hover{color:var(--ink)}
+.bar nav a.on{color:var(--ink);border-bottom-color:var(--red)}
+.bar nav a i{font-style:normal;color:var(--red)}
+.btn{
+  font:500 11px var(--mono);letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  background:none;color:var(--ink);border:1px solid var(--ink);border-radius:2px;padding:4px 9px;
+}
+.btn:hover{background:var(--ink);color:var(--paper)}
+@media(max-width:620px){.bar{margin:20px -16px 36px;padding:9px 16px}}
 
 /* ---- sections ---- */
-section{margin-bottom:64px}
+section{margin-bottom:62px}
 h2{
-  font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:2px;
-  text-transform:uppercase;display:flex;align-items:baseline;gap:12px;margin-bottom:18px;
+  font:600 13px var(--mono);letter-spacing:2px;text-transform:uppercase;
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;
 }
 h2 .n{color:var(--red)}
-h2::after{content:"";flex:1;border-bottom:1px solid var(--faint);transform:translateY(-4px)}
-section p{margin-bottom:14px;max-width:660px}
-.note{font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:10px}
+/* dimension line: |◂────▸| */
+h2 .dim{flex:1;height:9px;position:relative;border-left:1px solid var(--mute);border-right:1px solid var(--mute)}
+h2 .dim::before{content:"";position:absolute;left:0;right:0;top:4px;border-top:1px solid var(--mute)}
+h2 .count{font-weight:500;color:var(--mute);letter-spacing:1px;font-size:11px}
+section>p{margin-bottom:14px;max-width:680px}
+.note{font:12px/1.6 var(--mono);color:var(--mute);margin:0 0 14px}
 
 /* ---- toolbox ---- */
-.toolbox{font-family:var(--mono);font-size:13px;margin-top:20px;border-top:1px solid var(--faint)}
+.toolbox{font:13px var(--mono);margin-top:8px;border-top:1px solid var(--faint)}
 .toolbox div{display:flex;gap:16px;padding:9px 2px;border-bottom:1px solid var(--faint)}
 .toolbox dt{color:var(--mute);min-width:90px;text-transform:uppercase;font-size:11px;letter-spacing:1px;padding-top:2px}
-.toolbox dd{flex:1}
 
-/* ---- revision table & index tables ---- */
-.tablewrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px}
-th{
-  text-align:left;font-weight:600;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;
-  color:var(--mute);border-bottom:1.5px solid var(--ink);padding:8px 10px 8px 2px;white-space:nowrap;
+/* ---- controls: filter chips + command line ---- */
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:-22px 0 44px;font:12px var(--mono)}
+.chips{display:flex;border:1px solid var(--ink);border-radius:2px;overflow:hidden}
+.chips button{font:500 11px var(--mono);letter-spacing:1px;background:none;color:var(--ink);border:0;padding:5px 10px;cursor:pointer}
+.chips button+button{border-left:1px solid var(--ink)}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.cmd{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--ink);padding:3px 2px}
+.cmd label{color:var(--mute);white-space:nowrap}
+.cmd input{flex:1;font:13px var(--mono);background:none;border:0;color:var(--ink);outline:none;caret-color:var(--red)}
+.cmd input::placeholder{color:var(--mute);opacity:.7}
+.cmd kbd{font:10.5px var(--mono);color:var(--mute);border:1px solid var(--faint);border-radius:2px;padding:0 5px}
+
+/* ---- project list ---- */
+.list{font:13px var(--mono);border-top:1.5px solid var(--ink)}
+.head,.item>summary{
+  display:grid;gap:4px 14px;align-items:baseline;padding:10px 4px 10px 2px;
+  grid-template-columns:14px 64px 1fr 96px 62px 82px;
+  grid-template-areas:"tgl no title prog status date";
 }
-td{border-bottom:1px solid var(--faint);padding:10px 10px 10px 2px;vertical-align:top}
-tr.row{cursor:pointer}
-tr.row:hover td{background:rgba(26,24,20,.035)}
-td.num{color:var(--mute);white-space:nowrap}
-td.status-active{color:var(--red);font-weight:600}
-td.status-done{font-weight:600}
-td.status-draft{color:var(--mute)}
-tr.row .tgl{color:var(--mute);display:inline-block;width:14px}
-tr.row.open .tgl{color:var(--red)}
+.head{font-size:10.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);padding-top:7px;padding-bottom:7px;border-bottom:1px solid var(--faint)}
+.item{border-bottom:1px solid var(--faint)}
+.item>summary{list-style:none;cursor:pointer}
+.item>summary::-webkit-details-marker{display:none}
+.item>summary:hover{background:var(--hover)}
+.c-tgl{grid-area:tgl;color:var(--mute)} .c-tgl::before{content:"+"}
+.item[open] .c-tgl::before{content:"−";color:var(--red)}
+.c-no{grid-area:no;color:var(--mute);white-space:nowrap}
+.c-title{grid-area:title;font:500 16px/1.35 var(--serif)}
+.c-title small{display:block;font:11.5px var(--mono);color:var(--mute);margin-top:2px}
+.c-prog{grid-area:prog}
+.c-status{grid-area:status;font-weight:600;font-size:11.5px;letter-spacing:.8px}
+.c-date{grid-area:date;color:var(--mute);white-space:nowrap;text-align:right}
+.st-active{color:var(--red)} .st-done{color:var(--ink)} .st-draft{color:var(--mute);font-weight:500}
+.st-active::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.st-active::before{animation:none}}
+.head .c-date{text-align:right}
 
-/* ---- expanded detail ---- */
-tr.detail{display:none}
-tr.detail.open{display:table-row}
-tr.detail>td{padding:0 0 26px;border-bottom:1px solid var(--faint)}
+/* progress: one square per checklist item */
+.prog{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+.prog i{width:6px;height:9px;border:1px solid var(--mute)}
+.prog i.x{background:var(--ink);border-color:var(--ink)}
+.prog i.t{background:linear-gradient(90deg,var(--red) 50%,transparent 50%);border-color:var(--red)}
+.prog b{font-weight:400;color:var(--mute);font-size:11px;margin-left:6px}
+.prog.none{color:var(--mute)}
+
+/* revision triangle: item touched in the latest revision */
+.tri{display:inline-block;vertical-align:-1px;margin-left:7px;color:var(--red)}
+
+/* expand animation (modern browsers; others just snap open) */
+.item::details-content{block-size:0;overflow:clip;transition:block-size .3s ease,content-visibility .3s allow-discrete}
+.item[open]::details-content{block-size:auto}
+@media (prefers-reduced-motion:reduce){.item::details-content{transition:none}}
+
 .detail-inner{
-  border-left:2px solid var(--red);margin-top:14px;padding:4px 22px 2px;
-  font-family:var(--serif);font-size:15.5px;max-width:640px;
+  border-left:2px solid var(--red);margin:6px 0 24px 30px;padding:2px 22px;
+  font:16px/1.65 var(--serif);max-width:640px;
 }
-.detail-inner h5{
-  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--mute);margin:16px 0 6px;
-}
+.detail-inner h5{font:600 11px var(--mono);letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);margin:16px 0 6px}
 .detail-inner h5:first-child{margin-top:6px}
 .detail-inner ul{list-style:none;margin:4px 0 10px}
-.detail-inner li{padding-left:2px;margin-bottom:3px}
-.detail-inner li .mk{font-family:var(--mono);font-size:12.5px;color:var(--mute);margin-right:8px}
-.detail-inner li .mk.x{color:var(--ink)}
-.detail-inner li .mk.t{color:var(--red)}
+.detail-inner li{margin-bottom:3px}
+.detail-inner .mk{font:12.5px var(--mono);color:var(--mute);margin-right:8px}
+.detail-inner .mk.x{color:var(--ink)}
+.detail-inner .mk.t{color:var(--red)}
 .detail-inner p{margin-bottom:10px}
-.detail-inner code{font-family:var(--mono);font-size:13px;background:rgba(26,24,20,.06);padding:1px 5px;border-radius:2px}
+.detail-inner code{font:13px var(--mono);background:var(--hover);padding:1px 5px;border-radius:2px}
+.detail-inner .permalink{font:11px var(--mono);margin-top:12px}
+.detail-inner .permalink a{color:var(--mute);text-decoration:none}
+.detail-inner .permalink a:hover{color:var(--red)}
+.empty{padding:14px 2px;color:var(--mute);font:12.5px var(--mono)}
+:target>summary{background:color-mix(in srgb,var(--red) 8%,transparent)}
 
-/* ---- contact ---- */
-.contact{font-family:var(--mono);font-size:13.5px}
-.contact div{display:flex;gap:18px;padding:8px 2px;border-bottom:1px solid var(--faint)}
-.contact span:first-child{color:var(--mute);min-width:90px;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding-top:2px}
+@media(max-width:620px){
+  .head{display:none}
+  .item>summary{
+    grid-template-columns:14px auto 1fr auto;
+    grid-template-areas:"tgl no prog status" "tgl title title title" "tgl date date date";
+  }
+  .c-prog{justify-self:end}
+  .c-date{text-align:left;font-size:11px}
+  .detail-inner{margin-left:8px;padding:2px 14px}
+}
 
-/* ---- footer ---- */
+/* ---- contact + revisions ---- */
+.kv{font:13.5px var(--mono)}
+.kv div{display:flex;gap:18px;padding:8px 2px;border-bottom:1px solid var(--faint)}
+.kv span:first-child{color:var(--mute);min-width:90px;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding-top:2px}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font:13px var(--mono)}
+th{text-align:left;font-weight:600;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink);padding:7px 10px 7px 2px;white-space:nowrap}
+td{border-bottom:1px solid var(--faint);padding:9px 10px 9px 2px;vertical-align:top}
+td.num{color:var(--mute);white-space:nowrap}
+tr.latest td:first-child{color:var(--red);font-weight:600}
+
+/* ---- footer + cursor readout ---- */
 footer{
-  margin-top:90px;border-top:1.5px solid var(--ink);padding-top:14px;
-  font-family:var(--mono);font-size:11.5px;color:var(--mute);
+  margin-top:70px;border-top:1.5px solid var(--ink);padding-top:12px;
+  font:11.5px var(--mono);color:var(--mute);
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
 }
+kbd{font:inherit;border:1px solid var(--faint);border-radius:2px;padding:0 4px}
+.coords{
+  position:fixed;right:14px;bottom:12px;z-index:20;
+  font:11px var(--mono);color:var(--mute);letter-spacing:.5px;
+  background:var(--paper);border:1px solid var(--faint);padding:3px 8px;border-radius:2px;
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.coords.on{opacity:.9}
+@media (pointer:coarse){.coords{display:none}}
+
 @media print{
-  body{background:none;max-width:none;padding:0}
-  .schem,.contents{display:none}
-  tr.detail{display:table-row}
+  body{background:#fff;color:#000;padding:0;font-size:11pt}
+  .frame{border:0;padding:0}.zones,.schem,.bar,.controls,.coords,.permalink{display:none}
+  .sheet{border:0;padding:0}
+  .item::details-content{block-size:auto;content-visibility:visible}
+  .item{break-inside:avoid}
 }
 </style>
 </head>
 <body>
 
+<div class="frame">
+  <div class="zones h t" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+  <div class="zones h b" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+  <div class="zones v l" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+  <div class="zones v r" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+
+<div class="sheet">
 <header>
   <div class="titleblock">
     <span class="stamp">WORK IN PROGRESS</span>
-    <div>
+    <div class="tb-name">
       <h1>Valentin-Gabriel Marincaș</h1>
-      <div class="sub">Engineering log</div>
+      <div class="sub">Engineering log — CAD · electronics · software · security</div>
     </div>
-    <div class="cell-r">DOC. NO.<b>VGM-0001</b></div>
-    <div class="row2 sub" style="padding-top:8px">Politehnica University of Bucharest — Economic Engineering in the Fields of Electrical Engineering, Electronics, and Energy</div>
-    <div class="cell-r row2">REV <b id="doc-rev">—</b></div>
+    <div class="cell f r1 lc">Doc. no.<b>VGM-0001</b></div>
+    <div class="cell f r1">Rev<b id="tb-rev">—</b></div>
+    <div class="cell f lc">Date<b id="tb-date">—</b></div>
+    <div class="cell f">Sheet<b>1 / 1</b></div>
+    <div class="tb-inst">Politehnica University of Bucharest — Economic Engineering in the Fields of Electrical Engineering, Electronics, and Energy</div>
+    <div class="cell f lc">Drawn<b>V.G.M.</b></div>
+    <div class="cell f">Scale<b>1 : 1</b></div>
   </div>
 
-  <svg class="schem" viewBox="0 0 600 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path id="tr" d="M0 13 H140 L148 4 L162 22 L176 4 L190 22 L204 4 L212 13 H306 M330 13 H600"
+  <svg class="schem" viewBox="0 0 640 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path id="tr" d="M0 13 H140 L148 4 L162 22 L176 4 L190 22 L204 4 L212 13 H306 M330 13 H420 M444 13 H640"
           fill="none" stroke="currentColor" stroke-width="1.3"/>
     <line x1="312" y1="4" x2="312" y2="22" stroke="currentColor" stroke-width="1.6"/>
     <line x1="324" y1="4" x2="324" y2="22" stroke="currentColor" stroke-width="1.6"/>
-    <circle class="electron" r="2.2" fill="#b3441e">
-      <animateMotion dur="9s" repeatCount="indefinite" rotate="none">
-        <mpath href="#tr"/>
-      </animateMotion>
+    <path d="M420 5 V21 L444 13 Z M444 5 V21" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <circle cx="0" cy="13" r="2.2" fill="currentColor"/><circle cx="640" cy="13" r="2.2" fill="currentColor"/>
+    <circle class="electron" r="2.4" fill="var(--red)">
+      <animateMotion dur="9s" repeatCount="indefinite"><mpath href="#tr"/></animateMotion>
     </circle>
   </svg>
+  <p class="stats" id="stats">loading data…</p>
 
-  <nav class="contents">
-    CONTENTS:
-    <a href="#abstract">1 abstract</a>
-    <a href="#cad">2 cad</a>
-    <a href="#electronics">3 electronics</a>
-    <a href="#software">4 software</a>
-    <a href="#cyber">5 cybersecurity</a>
-    <a href="#contact">6 contact</a>
-    <a href="#revisions">7 revisions</a>
-  </nav>
+  <div class="bar">
+    <nav aria-label="Contents">
+      <a href="#abstract"><i>1</i> abstract</a>
+      <a href="#cad"><i>2</i> cad</a>
+      <a href="#electronics"><i>3</i> electronics</a>
+      <a href="#software"><i>4</i> software</a>
+      <a href="#cyber"><i>5</i> security</a>
+      <a href="#contact"><i>6</i> contact</a>
+      <a href="#revisions"><i>7</i> revisions</a>
+    </nav>
+    <button class="btn" id="theme" type="button" aria-label="Switch theme">◐ blueprint</button>
+  </div>
 </header>
 
 <main>
 
 <section id="abstract">
-  <h2><span class="n">1</span> Abstract</h2>
+  <h2><span class="n">1</span> Abstract <span class="dim"></span></h2>
   <p>
     I'm an engineering student at Politehnica University of Bucharest. This page logs what I've
     built and what I'm still working on: CAD drawings and 3D-printed parts, a couple of robots,
     web projects, and my cybersecurity training. Statuses are honest.
   </p>
-  <p class="note" style="margin:0">Tools used in the projects below:</p>
-  <dl class="toolbox" style="margin-top:8px">
+  <p class="note" style="margin:18px 0 0">Tools used in the projects below:</p>
+  <dl class="toolbox">
     <div><dt>CAD</dt><dd>AutoCAD · Fusion 360 · 3D printing</dd></div>
     <div><dt>Hardware</dt><dd>Arduino · C/C++</dd></div>
     <div><dt>Web</dt><dd>HTML · CSS · JavaScript · Leaflet maps</dd></div>
@@ -194,62 +336,56 @@ footer{
   </dl>
 </section>
 
-<section id="cad">
-  <h2><span class="n">2</span> CAD</h2>
-  <p class="note" style="margin:0 0 14px">2D drawings in AutoCAD, 3D parts in Fusion 360. Interactive models and downloads: <a href="https://tinuku.github.io/cad-portofolio/">CAD portfolio</a>.</p>
-  <div class="tablewrap">
-  <table>
-    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
-    <tbody id="cad-body"></tbody>
-  </table>
+<div class="controls" role="search">
+  <div class="chips" id="chips" aria-label="Filter by status">
+    <button type="button" data-s="all" aria-pressed="true">ALL</button>
+    <button type="button" data-s="active" aria-pressed="false">ACTIVE</button>
+    <button type="button" data-s="done" aria-pressed="false">DONE</button>
+    <button type="button" data-s="draft" aria-pressed="false">DRAFT</button>
   </div>
+  <div class="cmd">
+    <label for="q">Command:</label>
+    <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="filter projects…">
+    <kbd>/</kbd>
+  </div>
+</div>
+
+<section id="cad">
+  <h2><span class="n">2</span> CAD <span class="dim"></span><span class="count"></span></h2>
+  <p class="note">2D drawings in AutoCAD, 3D parts in Fusion 360. Interactive models and downloads: <a href="https://tinuku.github.io/cad-portofolio/">CAD portfolio</a>.</p>
+  <div class="list" data-cat="cad"></div>
 </section>
 
 <section id="electronics">
-  <h2><span class="n">3</span> Electronics</h2>
-  <p class="note" style="margin:0 0 14px">Embedded and robotics work. Click a row for full notes.</p>
-  <div class="tablewrap">
-  <table>
-    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
-    <tbody id="electronics-body"></tbody>
-  </table>
-  </div>
+  <h2><span class="n">3</span> Electronics <span class="dim"></span><span class="count"></span></h2>
+  <p class="note">Embedded and robotics work. Open a row for full notes.</p>
+  <div class="list" data-cat="electronics"></div>
 </section>
 
 <section id="software">
-  <h2><span class="n">4</span> Software</h2>
-  <p class="note" style="margin:0 0 14px">Web apps and tools. Click a row for full notes.</p>
-  <div class="tablewrap">
-  <table>
-    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
-    <tbody id="software-body"></tbody>
-  </table>
-  </div>
+  <h2><span class="n">4</span> Software <span class="dim"></span><span class="count"></span></h2>
+  <p class="note">Web apps and tools. Open a row for full notes.</p>
+  <div class="list" data-cat="software"></div>
 </section>
 
 <section id="cyber">
-  <h2><span class="n">5</span> Cybersecurity</h2>
-  <p class="note" style="margin:0 0 14px">Security training, my homelab and access-control work.</p>
-  <div class="tablewrap">
-  <table>
-    <thead><tr><th></th><th>No.</th><th>Project</th><th>Domain</th><th>Status</th><th>Updated</th></tr></thead>
-    <tbody id="cyber-body"></tbody>
-  </table>
-  </div>
+  <h2><span class="n">5</span> Cybersecurity <span class="dim"></span><span class="count"></span></h2>
+  <p class="note">Security training, my homelab and access-control work.</p>
+  <div class="list" data-cat="cybersecurity"></div>
 </section>
 
 <section id="contact">
-  <h2><span class="n">6</span> Contact</h2>
-  <div class="contact">
+  <h2><span class="n">6</span> Contact <span class="dim"></span></h2>
+  <div class="kv">
     <div><span>email</span><span><a href="mailto:tinuku182@gmail.com">tinuku182@gmail.com</a></span></div>
     <div><span>github</span><span><a href="https://github.com/Tinuku">github.com/Tinuku</a></span></div>
     <div><span>cad</span><span><a href="https://tinuku.github.io/cad-portofolio/">tinuku.github.io/cad-portofolio</a></span></div>
-    <div><span>linkedin</span><span>—</span></div>
+    <div><span>linkedin</span><span class="mute">—</span></div>
   </div>
 </section>
 
 <section id="revisions">
-  <h2><span class="n">7</span> Revision History</h2>
+  <h2><span class="n">7</span> Revision History <span class="dim"></span></h2>
   <div class="tablewrap">
   <table>
     <thead><tr><th>Rev</th><th>Date</th><th>Description</th></tr></thead>
@@ -262,74 +398,186 @@ footer{
 
 <footer>
   <span>VGM-0001 · © 2026 V.G. Marincaș</span>
-  <span>plain HTML — no framework, no build step, no tracking. <a href="view-source:" onclick="return false" title="Ctrl+U">view source</a></span>
+  <span>plain HTML — no framework, no build step, no tracking · <kbd>Ctrl</kbd>+<kbd>U</kbd> to view source</span>
 </footer>
+</div>
+</div>
 
-<!-- Load data.js with a cache-bust so a fresh push shows up immediately. Without this,
-     GitHub Pages' CDN and the browser cache data.js and keep serving the old copy. -->
-<script>document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');</script>
+<div class="coords" id="coords" aria-hidden="true">X 0000  Y 0000</div>
+
 <script>
 /* ================================================================
-   CONTENT lives in data.js — edit it through admin.html (local only).
-   This page renders PUBLIC items only. Private items live in
-   the private data file, which is never loaded here and never deployed.
+   CONTENT lives in data.js (window.SITE_DATA) — edit it through admin.html.
+   Same format as before: { revisions:[[rev,date,desc],…], projects:[{no,title,
+   domain,status,updated,category,details},…] }. Public items only.
    markers in details: [x] done · [~] in progress · [ ] todo
    ================================================================ */
-const DATA = window.SITE_DATA || { revisions:[], projects:[] };
-const REVISIONS = DATA.revisions || [];
-const PROJECTS  = DATA.projects  || [];
+(function(){
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const ST = {active:"ACTIVE",done:"DONE",draft:"DRAFT"};
+const state = {status:"all", q:""};
+const index = new Map();               // id -> searchable text
 
-/* ================================================================
-   RENDERING — no need to edit below
-   ================================================================ */
-const ST = {
-  active:["ACTIVE","status-active"],
-  done:["DONE","status-done"],
-  draft:["DRAFT","status-draft"]
-};
-
-function rows(list, mapper){
-  return list.map((it,i)=>{
-    const [label,cls] = ST[it.status] || ["—",""];
-    return mapper(it,i,label,cls) +
-      `<tr class="detail" data-d="${i}"><td colspan="6"><div class="detail-inner">${it.details}</div></td></tr>`;
-  }).join("");
+/* ---------- theme ---------- */
+const themeBtn = $("#theme");
+function paintTheme(){
+  const t = document.documentElement.dataset.theme;
+  themeBtn.textContent = t==="blueprint" ? "◑ paper" : "◐ blueprint";
 }
-
-const projMapper = (p,i,label,cls)=>`
-  <tr class="row" data-i="${i}">
-    <td class="num"><span class="tgl">+</span></td>
-    <td class="num">${p.no}</td>
-    <td>${p.title}</td>
-    <td class="num">${p.domain}</td>
-    <td class="${cls}">${label}</td>
-    <td class="num">${p.updated}</td>
-  </tr>`;
-
-function renderProjects(bodyId, category){
-  const list = PROJECTS.filter(p => (p.category || "electronics") === category);
-  document.getElementById(bodyId).innerHTML = list.length
-    ? rows(list, projMapper)
-    : `<tr><td colspan="6" class="num" style="color:var(--mute);padding:14px 2px">— nothing logged here yet —</td></tr>`;
-}
-renderProjects("cad-body","cad");
-renderProjects("electronics-body","electronics");
-renderProjects("software-body","software");
-renderProjects("cyber-body","cybersecurity");
-
-document.getElementById("rev-body").innerHTML = REVISIONS.map(r=>`
-  <tr><td class="num">${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td></tr>`).join("");
-
-if(REVISIONS[0]) document.getElementById("doc-rev").textContent = REVISIONS[0][0] + " · " + REVISIONS[0][1];
-
-document.addEventListener("click", e=>{
-  const row = e.target.closest("tr.row");
-  if(!row) return;
-  const detail = row.nextElementSibling;
-  const open = detail.classList.toggle("open");
-  row.classList.toggle("open", open);
-  row.querySelector(".tgl").textContent = open ? "−" : "+";
+themeBtn.addEventListener("click",()=>{
+  const t = document.documentElement.dataset.theme==="blueprint" ? "paper" : "blueprint";
+  document.documentElement.dataset.theme = t;
+  try{localStorage.setItem("vgm-theme",t)}catch(e){}
+  paintTheme();
 });
+paintTheme();
+
+/* ---------- helpers ---------- */
+const slug = s => "p-" + String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const plain = html => { const d=document.createElement("div"); d.innerHTML=html; return d.textContent; };
+
+function progress(html=""){
+  const n = re => (html.match(re)||[]).length;
+  return {x:n(/\[x\]/gi), t:n(/\[~\]/g), o:n(/\[ \]/g)};
+}
+function progHTML(p){
+  const total = p.x+p.t+p.o;
+  if(!total) return `<span class="prog none">—</span>`;
+  let x=p.x,t=p.t,o=p.o;
+  if(total>10){ x=Math.round(p.x/total*10); t=Math.round(p.t/total*10); o=Math.max(0,10-x-t); }
+  const sq = "<i class='x'></i>".repeat(x)+"<i class='t'></i>".repeat(t)+"<i></i>".repeat(o);
+  return `<span class="prog" title="${p.x} done · ${p.t} in progress · ${p.o} to do">${sq}<b>${p.x}/${total}</b></span>`;
+}
+const TRI = rev => `<svg class="tri" width="15" height="13" viewBox="0 0 15 13" aria-label="changed in rev ${rev}"><title>Changed in rev ${rev}</title><path d="M7.5 1 L14 12 H1 Z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>`;
+
+/* ---------- render ---------- */
+function render(){
+  const DATA = window.SITE_DATA || {revisions:[],projects:[]};
+  const REV  = DATA.revisions || [];
+  const PROJ = DATA.projects  || [];
+  const latest = REV[0] || null;
+
+  if(latest){ $("#tb-rev").textContent = latest[0]; $("#tb-date").textContent = latest[1]; }
+
+  $$(".list").forEach(list=>{
+    const cat = list.dataset.cat;
+    const items = PROJ.filter(p => (p.category||"electronics")===cat);
+    const head = `<div class="head" aria-hidden="true"><span></span><span>No.</span><span>Project / domain</span><span>Progress</span><span>Status</span><span class="c-date">Updated</span></div>`;
+    list.innerHTML = head + items.map(p=>{
+      const id = slug(p.no || p.title);
+      index.set(id, (p.no+" "+plain(p.title)+" "+plain(p.domain||"")+" "+plain(p.details||"")).toLowerCase());
+      const tri = latest && String(p.updated||"").length>=7 && String(latest[1]).startsWith(p.updated) ? TRI(latest[0]) : "";
+      return `<details class="item" id="${id}" data-status="${p.status}">
+        <summary>
+          <span class="c-tgl" aria-hidden="true"></span>
+          <span class="c-no">${p.no}</span>
+          <span class="c-title">${p.title}${tri}<small>${p.domain||""}</small></span>
+          <span class="c-prog">${progHTML(progress(p.details))}</span>
+          <span class="c-status st-${p.status}">${ST[p.status]||"—"}</span>
+          <span class="c-date">${p.updated||""}</span>
+        </summary>
+        <div class="detail-inner">${p.details||""}<p class="permalink"><a href="#${id}">¶ link to ${p.no}</a></p></div>
+      </details>`;
+    }).join("") + `<div class="empty" hidden></div>`;
+  });
+
+  $("#rev-body").innerHTML = REV.map((r,i)=>
+    `<tr class="${i?"":"latest"}"><td class="num">${i?"":"△ "}${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+
+  const c = s => PROJ.filter(p=>p.status===s).length;
+  $("#stats").innerHTML = PROJ.length
+    ? `<b>${PROJ.length}</b> logged · <b class="a">${c("active")}</b> active · <b>${c("done")}</b> done · <b>${c("draft")}</b> draft${latest?` · last rev <b>${latest[0]}</b> ${latest[1]}`:""}`
+    : "no data.js found — nothing logged yet";
+
+  $$(".item").forEach(d=>d.addEventListener("toggle",()=>{
+    if(d.open) history.replaceState(null,"","#"+d.id);
+    else if(location.hash==="#"+d.id) history.replaceState(null,"",location.pathname+location.search);
+  }));
+
+  applyFilter();
+  openFromHash();
+}
+
+/* ---------- filter + command line ---------- */
+function applyFilter(){
+  const q = state.q.trim().toLowerCase();
+  $$(".list").forEach(list=>{
+    const items = $$(".item",list);
+    let shown = 0;
+    items.forEach(d=>{
+      const ok = (state.status==="all" || d.dataset.status===state.status) && (!q || index.get(d.id).includes(q));
+      d.hidden = !ok; if(ok) shown++;
+    });
+    const empty = $(".empty",list);
+    empty.hidden = shown>0;
+    empty.textContent = items.length ? "— no match —" : "— nothing logged here yet —";
+    const count = list.closest("section").querySelector(".count");
+    const pad = n => String(n).padStart(2,"0");
+    count.textContent = (shown===items.length) ? `${pad(items.length)} items` : `${pad(shown)} / ${pad(items.length)}`;
+  });
+}
+$("#chips").addEventListener("click",e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  state.status = b.dataset.s;
+  $$("#chips button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+  applyFilter();
+});
+const q = $("#q");
+q.addEventListener("input",()=>{ state.q=q.value; applyFilter(); });
+q.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){ q.value=""; state.q=""; applyFilter(); q.blur(); }
+  if(e.key==="Enter"){                      // one match? open it
+    const vis = $$(".item").filter(d=>!d.hidden);
+    if(vis.length===1){ vis[0].open=true; vis[0].scrollIntoView({block:"start"}); }
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="/" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); q.focus(); }
+});
+
+/* ---------- deep links ---------- */
+function openFromHash(){
+  const id = decodeURIComponent(location.hash.slice(1));
+  if(!id.startsWith("p-")) return;
+  const d = document.getElementById(id);
+  if(d){ d.hidden=false; d.open=true; requestAnimationFrame(()=>d.scrollIntoView({block:"start"})); }
+}
+addEventListener("hashchange",openFromHash);
+
+/* ---------- active section in contents bar ---------- */
+const links = new Map($$(".bar nav a").map(a=>[a.getAttribute("href").slice(1),a]));
+const io = new IntersectionObserver(es=>{
+  es.forEach(en=>{ if(en.isIntersecting){ links.forEach(a=>a.classList.remove("on")); links.get(en.target.id)?.classList.add("on"); }});
+},{rootMargin:"-30% 0px -65% 0px"});
+$$("main section").forEach(s=>io.observe(s));
+
+/* ---------- cursor coordinate readout (like the CAD status bar) ---------- */
+const co = $("#coords"); let raf=0, hideT=0;
+addEventListener("pointermove",e=>{
+  if(e.pointerType!=="mouse" || raf) return;
+  raf = requestAnimationFrame(()=>{
+    raf=0;
+    const f = n => String(Math.round(n)).padStart(4,"0");
+    co.textContent = `X ${f(e.pageX)}  Y ${f(e.pageY)}`;
+    co.classList.add("on"); clearTimeout(hideT);
+    hideT = setTimeout(()=>co.classList.remove("on"),1400);
+  });
+},{passive:true});
+
+/* ---------- print: everything expanded ---------- */
+addEventListener("beforeprint",()=>$$(".item").forEach(d=>{d.dataset.was=d.open; d.open=true; d.hidden=false;}));
+addEventListener("afterprint",()=>{ $$(".item").forEach(d=>d.open=d.dataset.was==="true"); applyFilter(); });
+
+/* ---------- load data.js (cache-busted so a fresh push shows immediately) ---------- */
+if(window.SITE_DATA) render();
+else{
+  const s = document.createElement("script");
+  s.src = "data.js?v=" + Date.now();
+  s.onload = s.onerror = render;
+  document.head.appendChild(s);
+}
+})();
 </script>
 </body>
 </html>

@@ -3,6 +3,11 @@
 window.SITE_DATA = {
   "revisions": [
     [
+      "0.6",
+      "2026-11-22",
+      "Redrew the sheet: drawing frame and title block, blueprint theme, status filters, progress per project, linkable entries."
+    ],
+    [
       "0.5",
       "2026-11-18",
       "Added a CAD section and the saints map; trimmed the log to work that is finished or actually in progress."
