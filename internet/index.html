@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the Internet Works</title>
+<style>
+/* VOICE: a friend explaining over coffee; short sentences, zero jargon until it is explained
+   IDEA: a plain flashcard deck: one screen, one idea, one big Next button
+   PICTURE: each card's simple box-and-arrow line showing the message's trip
+   COLOUR and TYPE: white and black, one blue for the button; the device's own system font, large
+   LAYOUT: one narrow column, progress on top, buttons at the bottom; nothing else */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#141414);--ink:light-dark(#141414,#f2f2f2);--muted:light-dark(#5c5c5c,#b0b0b0);
+  --soft:light-dark(#f2f4f7,#222426);--line:light-dark(#d9dde3,#3a3d42);--blue:light-dark(#1a56db,#6ea0ff);--good:light-dark(#0d7a3e,#5ad38c);--bad:light-dark(#b42318,#ff8a80)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:680px;margin:0 auto;padding:16px 20px}
+.top b{font-size:17px}
+.lang{display:flex;gap:4px}
+.lang button{min-height:44px;min-width:52px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px system-ui,sans-serif;border-radius:8px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main{max-width:680px;margin:0 auto;padding:8px 20px 140px}
+.prog{font-size:16px;color:var(--muted);display:flex;justify-content:space-between}
+.bar{height:6px;background:var(--soft);border-radius:99px;margin:8px 0 32px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);transition:width .3s}
+h1{font-size:clamp(28px,6vw,36px);line-height:1.2;margin:0 0 18px;text-wrap:balance}
+p{margin:0 0 16px}
+.pic{background:var(--soft);border-radius:12px;padding:18px;margin:22px 0;font-size:18px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.flow span.b{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:600}
+.flow span.a{color:var(--muted)}
+.pieces{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.pieces span{border:2px solid var(--ink);border-radius:6px;padding:4px 10px;font-weight:600}
+.pieces small{color:var(--muted);font-weight:400;margin-right:4px}
+.label{font-size:15px;color:var(--muted);margin:0 0 4px}
+.chat{display:grid;gap:8px}
+.chat div{max-width:85%;padding:10px 14px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.chat div.r{justify-self:end;background:var(--blue);color:#fff;border-color:var(--blue)}
+ol.osi{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+ol.osi li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:baseline}
+ol.osi b{font-size:22px}
+.tip{font-size:17px;color:var(--muted)}
+.q{margin:0 0 26px}
+.q p{font-weight:700;margin-bottom:10px}
+.q button{display:block;width:100%;text-align:left;min-height:52px;margin:0 0 8px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:18px system-ui,sans-serif;cursor:pointer}
+.q button.right{border:2px solid var(--good);color:var(--good);font-weight:700}
+.q button.wrong{border:2px solid var(--bad);color:var(--bad)}
+.next{display:grid;gap:12px;margin-top:18px}
+.next a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}
+.next a b{color:var(--blue)}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line)}
+.nav div{max-width:680px;margin:0 auto;padding:14px 20px;display:flex;gap:12px}
+.nav button{flex:1;min-height:58px;border-radius:12px;font:700 19px system-ui,sans-serif;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.nav button.go{flex:2;background:var(--blue);border-color:var(--blue);color:#fff}
+.nav button:disabled{opacity:.35;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="top"><b id="brand">How the Internet Works</b>
+  <div class="lang" role="group" aria-label="Language"><button type="button" id="en" aria-pressed="true">EN</button><button type="button" id="ro" aria-pressed="false">RO</button></div>
+</div>
+<main>
+  <div class="prog"><span id="count"></span><span id="mins"></span></div>
+  <div class="bar"><i id="fill"></i></div>
+  <article id="card" aria-live="polite"></article>
+</main>
+<nav class="nav" aria-label="Pages"><div><button type="button" id="back">Back</button><button type="button" class="go" id="fwd">Next</button></div></nav>
+
+<script>
+{
+const flow = (items) => '<div class="flow">' + items.map((x,i)=>(i?'<span class="a">→</span>':'')+'<span class="b">'+x+'</span>').join('') + '</div>';
+const C = {
+en:{ brand:'How the Internet Works', back:'Back', next:'Next', finish:'Start over', of:(a,b)=>a+' of '+b, mins:'about 10 minutes',
+  cards:[
+   ['What happens when you send a message?',
+    '<p>You type "I like you", press send, and one second later it\'s on her phone.</p><p>How does that actually work? These short screens explain it, step by step. You don\'t need to be good with computers.</p><p>Just press <b>Next</b>.</p>'],
+   ['Step 1. Devices are connected',
+    '<p>A <b>network</b> is just devices joined together, by cable or by Wi-Fi, so they can send things to each other.</p>'+'<div class="pic">'+flow(['Your phone','Wi-Fi box','Internet','Her phone'])+'</div>'+'<p>Your phone, your laptop and the Wi-Fi box at home are a small network. The <b>internet</b> is millions of small networks joined together.</p>'],
+   ['Step 2. Every device has an address',
+    '<p>So your message doesn\'t get lost, every device gets a number, called an <b>IP address</b>.</p><div class="pic"><p class="label">It\'s like the address on an envelope:</p><b>To: 85.120.44.7</b></div><p>Your Wi-Fi box gives one to every phone and laptop in your home. <span class="tip">(The number above is just an example.)</span></p>'],
+   ['Step 3. Your message is cut into small pieces',
+    '<p>Messages, photos and videos travel in small pieces called <b>packets</b>. Each piece gets a number.</p><div class="pic"><p class="label">How they arrive (mixed up):</p><div class="pieces"><span><small>3</small>you</span><span><small>1</small>I</span><span><small>2</small>like</span></div><p class="label">Her phone puts them back in order:</p><div class="pieces"><span><small>1</small>I</span><span><small>2</small>like</span><span><small>3</small>you</span></div></div><p>If a piece gets lost, her phone simply asks for it again.</p>'],
+   ['Step 4. Routers pass it along',
+    '<p>Your message doesn\'t fly straight to her phone. It jumps through many machines called <b>routers</b>. Each one sends it a bit closer.</p><div class="pic">'+flow(['You','Router','Router','Router','Her'])+'</div><p>Like passing a note from desk to desk in class. If one road is broken, it simply takes another road.</p>'],
+   ['Step 5. Names become numbers',
+    '<p>You type <b>instagram.com</b>, but computers only understand number addresses.</p><div class="pic"><div class="chat"><div>What is the number for instagram.com?</div><div class="r">It\'s 157.240.0.35. Go there.</div></div></div><p>This helper is called <b>DNS</b>. It\'s the internet\'s contact list: you tap a name, the phone finds the number. <span class="tip">(Example number.)</span></p>'],
+   ['Step 6. Computers follow the same rules',
+    '<p>To understand each other, computers follow the same rules, called <b>protocols</b>. Before sending, they check the other side is there, like a phone call:</p><div class="pic"><div class="chat"><div>Hi, can you hear me?</div><div class="r">Yes! Can you hear me?</div><div>Yes. Sending now.</div></div></div><p class="tip">Real name: the TCP handshake.</p>'],
+   ['Step 7. The OSI model: all of it in one list',
+    '<p>Experts split everything you just learned into <b>7 layers</b>. Don\'t memorize it today. Just see that each layer has one job:</p><div class="pic"><ol class="osi">'+
+    [['7','<b>Application</b>: the app you use (WhatsApp, Instagram)'],['6','<b>Presentation</b>: puts the message in a format both sides read, and locks it'],['5','<b>Session</b>: keeps the conversation open'],['4','<b>Transport</b>: cuts it into numbered pieces, checks they all arrived'],['3','<b>Network</b>: adds the IP address, picks the road'],['2','<b>Data link</b>: moves it to the next device nearby'],['1','<b>Physical</b>: the cable, the Wi-Fi signal, the electricity']].map(l=>'<li><b>'+l[0]+'</b><span>'+l[1]+'</span></li>').join('')+
+    '</ol></div><p class="tip">Memory trick, from 1 to 7: "Please Do Not Throw Sausage Pizza Away".</p>'],
+   ['Where cybersecurity comes in',
+    '<p>Your message passes through many machines on the way. So: who else could read it?</p><p><b>Cybersecurity</b> is about protecting it:</p><div class="pic"><p>• Locking messages so only the right person can open them (<b>encryption</b>)</p><p>• Checking people are who they say they are (<b>passwords</b>, codes on your phone)</p><p style="margin:0">• Stopping thieves and scams</p></div><p>The little padlock next to a website address means your connection is locked.</p>'],
+   ['Where data science comes in',
+    '<p>Every message, like, song and search leaves a small record. That record is <b>data</b>.</p><p><b>Data science</b> means finding useful patterns in lots of data.</p><div class="pic"><p>• Spotify Wrapped looks at everything you played this year and finds your top songs.</p><p style="margin:0">• A bank notices a payment that doesn\'t look like you, and blocks it.</p></div><p>That last one is data science and cybersecurity working together.</p>'],
+   ['Quick check',
+    'QUIZ'],
+   ['You did it!',
+    '<p>You now know how a message travels across the internet. Most people never learn this.</p><p>Want to keep going? Pick one. Both are free and start from zero:</p><div class="next"><a href="https://tryhackme.com/path/outline/presecurity"><b>Cybersecurity →</b><br>TryHackMe "Pre Security": short lessons with practice right in your browser.</a><a href="https://www.kaggle.com/learn/intro-to-programming"><b>Data science →</b><br>Kaggle Learn "Intro to Programming": tiny lessons, no installing anything.</a></div>']
+  ],
+  quiz:[['What does an IP address do?',['Tells messages where to go','Makes the internet faster'],0],['Why is a message cut into packets?',['So it\'s secret','Small numbered pieces travel easily and are put back in order'],1],['What does DNS do?',['Turns names like instagram.com into number addresses','Blocks viruses'],0]],
+  ok:'Right!', no:'Not quite, the green one is right.' },
+ro:{ brand:'Cum funcționează internetul', back:'Înapoi', next:'Înainte', finish:'Ia-o de la capăt', of:(a,b)=>a+' din '+b, mins:'cam 10 minute',
+  cards:[
+   ['Ce se întâmplă când trimiți un mesaj?',
+    '<p>Scrii „Îmi placi”, apeși trimite și peste o secundă mesajul e pe telefonul ei.</p><p>Cum se întâmplă asta de fapt? Ecranele astea scurte îți explică pas cu pas. Nu trebuie să te pricepi la calculatoare.</p><p>Doar apasă <b>Înainte</b>.</p>'],
+   ['Pasul 1. Aparatele sunt legate',
+    '<p>O <b>rețea</b> înseamnă pur și simplu aparate legate între ele, prin cablu sau prin Wi-Fi, ca să-și poată trimite lucruri.</p>'+'<div class="pic">'+flow(['Telefonul tău','Routerul Wi-Fi','Internet','Telefonul ei'])+'</div>'+'<p>Telefonul, laptopul și routerul Wi-Fi de acasă formează o rețea mică. <b>Internetul</b> înseamnă milioane de rețele mici legate între ele.</p>'],
+   ['Pasul 2. Fiecare aparat are o adresă',
+    '<p>Ca mesajul să nu se piardă, fiecare aparat primește un număr, numit <b>adresă IP</b>.</p><div class="pic"><p class="label">E ca adresa de pe un plic:</p><b>Către: 85.120.44.7</b></div><p>Routerul Wi-Fi dă câte o adresă fiecărui telefon și laptop din casă. <span class="tip">(Numărul de mai sus e doar un exemplu.)</span></p>'],
+   ['Pasul 3. Mesajul e tăiat în bucăți mici',
+    '<p>Mesajele, pozele și filmele călătoresc în bucăți mici numite <b>pachete</b>. Fiecare bucată primește un număr.</p><div class="pic"><p class="label">Cum ajung (amestecate):</p><div class="pieces"><span><small>2</small>placi</span><span><small>1</small>Îmi</span></div><p class="label">Telefonul ei le pune la loc în ordine:</p><div class="pieces"><span><small>1</small>Îmi</span><span><small>2</small>placi</span></div></div><p>Dacă se pierde o bucată, telefonul ei o cere din nou.</p>'],
+   ['Pasul 4. Routerele îl dau mai departe',
+    '<p>Mesajul nu zboară direct la telefonul ei. Sare prin multe aparate numite <b>routere</b>. Fiecare îl trimite puțin mai aproape.</p><div class="pic">'+flow(['Tu','Router','Router','Router','Ea'])+'</div><p>Ca un bilețel dat din bancă în bancă la ore. Dacă un drum e stricat, ia pur și simplu alt drum.</p>'],
+   ['Pasul 5. Numele devin numere',
+    '<p>Tu scrii <b>instagram.com</b>, dar calculatoarele înțeleg doar adrese din cifre.</p><div class="pic"><div class="chat"><div>Care e numărul pentru instagram.com?</div><div class="r">E 157.240.0.35. Du-te acolo.</div></div></div><p>Ajutorul ăsta se numește <b>DNS</b>. E agenda de contacte a internetului: apeși pe un nume, telefonul găsește numărul. <span class="tip">(Număr dat ca exemplu.)</span></p>'],
+   ['Pasul 6. Calculatoarele respectă aceleași reguli',
+    '<p>Ca să se înțeleagă, calculatoarele respectă aceleași reguli, numite <b>protocoale</b>. Înainte să trimită, verifică dacă celălalt e acolo, ca la telefon:</p><div class="pic"><div class="chat"><div>Alo, mă auzi?</div><div class="r">Da! Tu mă auzi?</div><div>Da. Trimit acum.</div></div></div><p class="tip">Denumirea reală: TCP handshake (strângerea de mână TCP).</p>'],
+   ['Pasul 7. Modelul OSI: totul într-o listă',
+    '<p>Specialiștii împart tot ce ai învățat în <b>7 straturi</b>. Nu trebuie să le înveți pe de rost azi. Doar observă că fiecare strat are o singură treabă:</p><div class="pic"><ol class="osi">'+
+    [['7','<b>Aplicație</b>: aplicația pe care o folosești (WhatsApp, Instagram)'],['6','<b>Prezentare</b>: pune mesajul într-o formă pe care o citesc amândoi și îl încuie'],['5','<b>Sesiune</b>: ține conversația deschisă'],['4','<b>Transport</b>: îl taie în bucăți numerotate, verifică dacă au ajuns toate'],['3','<b>Rețea</b>: adaugă adresa IP, alege drumul'],['2','<b>Legătură de date</b>: îl duce la următorul aparat din apropiere'],['1','<b>Fizic</b>: cablul, semnalul Wi-Fi, curentul electric']].map(l=>'<li><b>'+l[0]+'</b><span>'+l[1]+'</span></li>').join('')+
+    '</ol></div><p class="tip">Truc de memorare, de la 1 la 7: „Fata Lui Radu Trimite Scrisori Prin Avion”.</p>'],
+   ['Unde intră securitatea cibernetică',
+    '<p>Mesajul tău trece prin multe aparate pe drum. Deci: cine altcineva l-ar putea citi?</p><p><b>Securitatea cibernetică</b> înseamnă să-l protejezi:</p><div class="pic"><p>• Încui mesajele, ca doar persoana potrivită să le poată deschide (<b>criptare</b>)</p><p>• Verifici că oamenii sunt cine spun că sunt (<b>parole</b>, coduri pe telefon)</p><p style="margin:0">• Oprești hoții și țepele</p></div><p>Lăcățelul de lângă adresa unui site înseamnă că legătura ta e încuiată.</p>'],
+   ['Unde intră știința datelor',
+    '<p>Fiecare mesaj, like, melodie și căutare lasă o mică urmă. Urma asta se numește <b>date</b>.</p><p><b>Știința datelor</b> (data science) înseamnă să găsești tipare utile în foarte multe date.</p><div class="pic"><p>• Spotify Wrapped se uită la tot ce ai ascultat anul ăsta și îți găsește melodiile preferate.</p><p style="margin:0">• O bancă observă o plată care nu seamănă cu tine și o blochează.</p></div><p>Ultimul exemplu înseamnă știința datelor și securitatea cibernetică lucrând împreună.</p>'],
+   ['Verificare rapidă',
+    'QUIZ'],
+   ['Gata, ai reușit!',
+    '<p>Acum știi cum călătorește un mesaj prin internet. Majoritatea oamenilor nu află asta niciodată.</p><p>Vrei să continui? Alege una. Amândouă sunt gratuite și pornesc de la zero (sunt în engleză):</p><div class="next"><a href="https://tryhackme.com/path/outline/presecurity"><b>Securitate cibernetică →</b><br>TryHackMe „Pre Security”: lecții scurte cu exerciții direct în browser.</a><a href="https://www.kaggle.com/learn/intro-to-programming"><b>Știința datelor →</b><br>Kaggle Learn „Intro to Programming”: lecții mici, fără să instalezi nimic.</a></div>']
+  ],
+  quiz:[['La ce folosește adresa IP?',['Le spune mesajelor unde să meargă','Face internetul mai rapid'],0],['De ce e tăiat un mesaj în pachete?',['Ca să fie secret','Bucățile mici, numerotate, călătoresc ușor și sunt puse la loc în ordine'],1],['Ce face DNS-ul?',['Transformă nume ca instagram.com în adrese din cifre','Blochează virușii'],0]],
+  ok:'Corect!', no:'Nu chiar, varianta verde e cea bună.' }
+};
+const get = (k,d)=>{ try{ const v = localStorage.getItem('hiw-'+k); return v===null?d:JSON.parse(v); }catch(e){ return d; } };
+const put = (k,v)=>{ try{ localStorage.setItem('hiw-'+k, JSON.stringify(v)); }catch(e){} };
+let lang = get('lang', (navigator.language||'').toLowerCase().startsWith('ro') ? 'ro' : 'en');
+let i = get('i', 0);
+const answers = [null,null,null];
+const $ = id => document.getElementById(id);
+function quizHtml(L){
+  return L.quiz.map((q,qi)=>'<div class="q"><p>'+(qi+1)+'. '+q[0]+'</p>'+q[1].map((o,oi)=>{
+    const a = answers[qi], cls = a===null ? '' : oi===q[2] ? 'right' : oi===a ? 'wrong' : '';
+    return '<button type="button" data-q="'+qi+'" data-o="'+oi+'" class="'+cls+'">'+o+'</button>'; }).join('') +
+    (answers[qi]!==null ? '<p class="tip" style="font-weight:400">'+(answers[qi]===q[2]?L.ok:L.no)+'</p>' : '') + '</div>').join('');
+}
+function render(focus){
+  const L = C[lang], n = L.cards.length;
+  i = Math.max(0, Math.min(n-1, i)); put('i', i);
+  document.documentElement.lang = lang; document.title = L.brand; $('brand').textContent = L.brand;
+  $('en').setAttribute('aria-pressed', lang==='en'); $('ro').setAttribute('aria-pressed', lang==='ro');
+  const [title, body] = L.cards[i];
+  $('card').innerHTML = '<h1 tabindex="-1">'+title+'</h1>' + (body==='QUIZ' ? quizHtml(L) : body);
+  $('count').textContent = L.of(i+1, n); $('mins').textContent = i===0 ? L.mins : '';
+  $('fill').style.width = ((i+1)/n*100)+'%';
+  $('back').textContent = L.back; $('back').disabled = i===0;
+  $('fwd').textContent = i===n-1 ? L.finish : L.next;
+  if (focus){ window.scrollTo(0,0); $('card').querySelector('h1').focus({preventScroll:true}); }
+}
+function go(d){ const n = C[lang].cards.length; if (d>0 && i===n-1){ i = 0; answers.fill(null); } else i += d; render(true); }
+$('fwd').addEventListener('click', ()=>go(1));
+$('back').addEventListener('click', ()=>go(-1));
+document.addEventListener('keydown', e=>{ if (e.target.closest('button,a')) return; if (e.key==='ArrowRight') go(1); if (e.key==='ArrowLeft') go(-1); });
+$('card').addEventListener('click', e=>{ const b = e.target.closest('button[data-q]'); if (!b) return; const q = +b.dataset.q; if (answers[q]!==null) return; answers[q] = +b.dataset.o; render(false); });
+$('en').addEventListener('click', ()=>{ lang='en'; put('lang','en'); render(false); });
+$('ro').addEventListener('click', ()=>{ lang='ro'; put('lang','ro'); render(false); });
+render(false);
+}
+</script>
+</body>
+</html>
